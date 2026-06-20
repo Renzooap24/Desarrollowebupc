@@ -1,0 +1,281 @@
+<div class="container mt-4">
+
+  <h2>Clientes</h2>
+  <p class="text-muted">Administración de clientes</p>
+
+  <div class="row mb-3">
+
+    <div class="col-md-8">
+      <input
+        type="text"
+        class="form-control"
+        placeholder="Buscar clientes por nombre, código, email, empresa o teléfono...">
+    </div>
+
+    <div class="col-md-2">
+      <button class="btn btn-dark w-100">
+        + Nuevo Cliente
+      </button>
+    </div>
+
+    <div class="col-md-2">
+      <button class="btn btn-outline-secondary w-100">
+        Exportar
+      </button>
+    </div>
+
+  </div>
+
+  <div class="row mb-4">
+
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6>Total Clientes</h6>
+          <h3>8</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6>Clientes Activos</h6>
+          <h3>7</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6>Con Empresa</h6>
+          <h3>8</h3>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6>Nuevos (Este Mes)</h6>
+          <h3>4</h3>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="card shadow-sm">
+
+    <div class="card-body">
+
+      <table class="table table-hover">
+
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>DNI</th>
+            <th>Email</th>
+            <th>Teléfono</th>
+            <th>Empresa</th>
+            <th>Ciudad</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr>
+            <td>CLI-001</td>
+            <td>Juan Carlos Pérez Guzmán</td>
+            <td>12345678</td>
+            <td>juan@email.com</td>
+            <td>999999999</td>
+            <td>Tecnología Avanzada SAC</td>
+            <td>Lima</td>
+            <td>
+              <span class="badge bg-success">Activo</span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary me-1">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-warning me-1">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <tr>
+            <td>CLI-002</td>
+            <td>María García Tovar</td>
+            <td>87654321</td>
+            <td>maria@email.com</td>
+            <td>988888888</td>
+            <td>Innovación Digital</td>
+            <td>Arequipa</td>
+            <td>
+              <span class="badge bg-success">Activo</span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary me-1">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-warning me-1">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <tr>
+            <td>CLI-003</td>
+            <td>Carlos Ruiz González</td>
+            <td>87654321</td>
+            <td>carlos@email.com</td>
+            <td>977777777</td>
+            <td>StartupTech</td>
+            <td>Trujillo</td>
+            <td>
+              <span class="badge bg-danger">Inactivo</span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary me-1">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-warning me-1">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <tr>
+            <td>CLI-004</td>
+            <td>Ana López Martínez</td>
+            <td>12345678</td>
+            <td>ana@email.com</td>
+            <td>966666666</td>
+            <td>Grupo Empresarial SAC</td>
+            <td>Piura</td>
+            <td>
+              <span class="badge bg-success">Activo</span>
+            </td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary me-1">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-warning me-1">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td>CLI-005</td>
+            <td>Patricia Hernández Torres</td>
+            <td>12345678</td>
+            <td>patricia@email.com</td>
+            <td>955555555</td>
+            <td>Logística Express</td>
+            <td>Cusco</td>
+            <td><span class="badge bg-success">Activo</span></td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary me-1">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-warning me-1">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <tr>
+            <td>CLI-006</td>
+            <td>Fernando Jiménez López</td>
+            <td>12345678</td>
+            <td>fernando@email.com</td>
+            <td>944444444</td>
+            <td>Construcciones FJ</td>
+            <td>Chiclayo</td>
+            <td><span class="badge bg-success">Activo</span></td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary me-1">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-warning me-1">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <tr>
+            <td>CLI-007</td>
+            <td>Lucía Morales Rojas</td>
+            <td>12345678</td>
+            <td>lucia@email.com</td>
+            <td>933333333</td>
+            <td>Retail Solutions</td>
+            <td>Huancayo</td>
+            <td><span class="badge bg-success">Activo</span></td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary me-1">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-warning me-1">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <tr>
+            <td>CLI-008</td>
+            <td>José Ramírez Mendoza</td>
+            <td>12345678</td>
+            <td>jose@email.com</td>
+            <td>922222222</td>
+            <td>Comercial JR</td>
+            <td>Ica</td>
+            <td><span class="badge bg-success">Activo</span></td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary me-1">
+                <i class="fas fa-eye"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-warning me-1">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="btn btn-sm btn-outline-danger">
+                <i class="fas fa-trash"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</div>
