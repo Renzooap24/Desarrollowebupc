@@ -1,24 +1,32 @@
-        .login-card {
-            background-color: #fff;
-            padding: 2.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-        }
+.login-container {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f2f5;
+}
 
-        .form-control-with-icon {
-            position: relative;
-        }
+.login-card {
+    background-color: #fff;
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
 
-        .form-control-with-icon .form-control {
-            padding-left: 2.5rem;
-        }
+.form-control-with-icon {
+    position: relative;
+}
 
-        .form-control-with-icon .input-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #ccc;
-        }
+.form-control-with-icon .form-control {
+    padding-left: 2.5rem;
+}
+
+.form-control-with-icon .input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ccc;
+}
