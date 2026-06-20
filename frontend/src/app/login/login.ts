@@ -17,7 +17,7 @@ export class Login {
 
   iniciarSesion() {
     if (this.email === 'admin' && this.password === '12345678') {
-      this.router.navigate(['/servicios']); 
+      this.router.navigate(['/dashboard']);
     } else {
       alert('Usuario o contraseña incorrectos.');
     }

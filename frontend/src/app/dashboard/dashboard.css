@@ -1,0 +1,64 @@
+:host {
+    display: block;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+}
+
+.module-card {
+    border-radius: 18px;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,.06);
+    transition: all .3s ease;
+}
+
+.module-card:hover {
+    transform: translateY(-5px);
+}
+
+.summary-card {
+    border-radius: 18px;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,.06);
+}
+
+.card-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 12px;
+    font-size: 28px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon-inventario {
+    background: #e6f0ff;
+}
+
+.icon-clientes {
+    background: #e5f6e8;
+}
+
+.icon-maquinas {
+    background: #f4e6ff;
+}
+
+.icon-servicios {
+    background: #fff5e6;
+}
+
+.icon-reportes {
+    background: #f7e6e6;
+}
+
+.icon-finanzas {
+    background: #fff4d6;
+}
+
+.module-card {
+    border-radius: 18px;
+    border: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,.06);
+    transition: all .3s ease;
+    min-height: 220px;
+}

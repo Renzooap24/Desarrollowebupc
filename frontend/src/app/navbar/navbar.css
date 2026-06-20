@@ -1,0 +1,39 @@
+.navbar-custom {
+  background-color: #ffffff;
+  border-bottom: 1px solid #dee2e6;
+  box-shadow: 0 2px 8px rgba(0,0,0,.05);
+}
+
+.notification-bell {
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: #6c757d;
+  transition: .3s;
+}
+
+.notification-bell:hover {
+  color: #dc3545;
+}
+
+.notification-badge {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.navbar-custom {
+  min-height: 70px;
+  z-index: 1000;
+}
+
+.navbar-brand {
+  font-size: 1.4rem;
+}
+
+.text-muted {
+  font-size: 0.95rem;
+}
