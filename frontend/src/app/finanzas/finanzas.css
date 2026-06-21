@@ -1,0 +1,41 @@
+.summary-card {
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,.05);
+    padding: 1.5rem;
+}
+
+.table-container {
+    background-color: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,.05);
+    padding: 2rem;
+}
+
+.status-badge {
+    font-size: .8em;
+    padding: .4em .8em;
+}
+
+.text-purple {
+    color: #6f42c1;
+}
+
+.modal-backdrop-custom {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.5);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    z-index: 999;
+}
+
+.modal-custom {
+    background: white;
+    padding: 2rem;
+    border-radius: 12px;
+    width: 600px;
+    max-width: 95%;
+}
