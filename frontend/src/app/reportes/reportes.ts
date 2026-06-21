@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -16,13 +16,38 @@ import * as XLSX from 'xlsx';
   styleUrl: './reportes.css'
 })
 
-export class Reportes {
+export class Reportes implements OnInit {
 
   pestanaActiva = 'inventario';
   textoBusqueda = '';
 
   mostrarModal = false;
   reporteSeleccionado: any = null;
+
+  modoEdicion = false;
+
+  ngOnInit() {
+
+    const datosGuardados =
+      localStorage.getItem('reportesInventario');
+
+    if (datosGuardados) {
+
+      this.reportesInventario =
+        JSON.parse(datosGuardados);
+
+    }
+
+  }
+
+  guardarLocalStorage() {
+
+    localStorage.setItem(
+      'reportesInventario',
+      JSON.stringify(this.reportesInventario)
+    );
+
+  }
 
   cambiarPestana(pestana: string) {
     this.pestanaActiva = pestana;
@@ -56,10 +81,12 @@ export class Reportes {
     }
 
     return this.reportesInventario.filter(reporte =>
-      reporte.nombre.toLowerCase().includes(this.textoBusqueda.toLowerCase()) ||
+      reporte.nombre
+        .toLowerCase()
+        .includes(this.textoBusqueda.toLowerCase()) ||
       reporte.fecha.includes(this.textoBusqueda)
     );
-  }  
+  }
 
   eliminarReporte(id: number) {
 
@@ -73,6 +100,8 @@ export class Reportes {
         this.reportesInventario.filter(
           reporte => reporte.id !== id
         );
+
+      this.guardarLocalStorage();
 
     }
   }
@@ -95,34 +124,51 @@ export class Reportes {
 
   agregarReporte() {
 
-    const nuevoReporte = {
-      id: this.reportesInventario.length + 1,
-      nombre: 'Nuevo Reporte',
-      fecha: new Date().toISOString().split('T')[0],
+    this.modoEdicion = false;
+
+    this.reporteSeleccionado = {
+      id: 0,
+      nombre: '',
+      fecha: '',
       estado: 'Activo'
     };
 
-    this.reportesInventario.push(nuevoReporte);
+    this.mostrarModal = true;
+  }
+
+  obtenerNuevoId(): number {
+
+    if (this.reportesInventario.length === 0) {
+      return 1;
+    }
+
+    return Math.max(
+      ...this.reportesInventario.map(
+        r => r.id
+      )
+    ) + 1;
+
   }
 
   verReporte(reporte: any) {
 
     alert(
-      `Reporte: ${reporte.nombre}
-  Fecha: ${reporte.fecha}
-  Estado: ${reporte.estado}`
+`Reporte: ${reporte.nombre}
+Fecha: ${reporte.fecha}
+Estado: ${reporte.estado}`
     );
 
   }
 
   editarReporte(reporte: any) {
 
+    this.modoEdicion = true;
+
     this.reporteSeleccionado = {
       ...reporte
     };
 
     this.mostrarModal = true;
-
   }
 
   cerrarModal() {
@@ -130,47 +176,41 @@ export class Reportes {
     this.mostrarModal = false;
 
   }
-  
+
   guardarCambios() {
 
-    const indice = this.reportesInventario.findIndex(
-      x => x.id === this.reporteSeleccionado.id
-    );
+    if (this.modoEdicion) {
 
-    if (indice !== -1) {
+      const indice =
+        this.reportesInventario.findIndex(
+          x => x.id === this.reporteSeleccionado.id
+        );
 
-      this.reportesInventario[indice] = {
-        ...this.reporteSeleccionado
+      if (indice !== -1) {
+
+        this.reportesInventario[indice] = {
+          ...this.reporteSeleccionado
+        };
+
+      }
+
+    } else {
+
+      const nuevoReporte = {
+        ...this.reporteSeleccionado,
+        id: this.obtenerNuevoId()
       };
+
+      this.reportesInventario.push(
+        nuevoReporte
+      );
 
     }
 
+    this.guardarLocalStorage();
+
     this.mostrarModal = false;
 
-  }
-
-  exportarExcel() {
-
-    const datos = this.reportesInventario.map(reporte => ({
-      nombre: reporte.nombre,
-      fecha: reporte.fecha,
-      estado: reporte.estado
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(datos);
-
-    const workbook = XLSX.utils.book_new();
-
-    XLSX.utils.book_append_sheet(
-      workbook,
-      worksheet,
-      'Reportes'
-    );
-
-    XLSX.writeFile(
-      workbook,
-      'reportes_inventario.xlsx'
-    );
   }
 
   mostrarDetalle = false;
@@ -204,14 +244,19 @@ export class Reportes {
   ];
 
   verDetalle(vendedor: any) {
-    this.vendedorSeleccionado = vendedor;
+
+    this.vendedorSeleccionado =
+      vendedor;
+
     this.mostrarDetalle = true;
 
   }
 
   cerrarDetalle() {
+
     this.mostrarDetalle = false;
-  }    
+
+  }
 
   facturasRecientes = [
     {
@@ -237,37 +282,69 @@ export class Reportes {
   cotizacionesRecientes = [
     {
       id: 'COT-001',
-      cliente: 'CLI-001 - Juan Carlos Pérez',
+      cliente:
+        'CLI-001 - Juan Carlos Pérez',
       total: 1500,
       estado: 'Pendiente'
     },
     {
       id: 'COT-003',
-      cliente: 'CLI-004 - María González',
+      cliente:
+        'CLI-004 - María González',
       total: 2200,
       estado: 'Pendiente'
     },
     {
       id: 'COT-006',
-      cliente: 'CLI-007 - Luis Morales',
+      cliente:
+        'CLI-007 - Luis Morales',
       total: 950.25,
       estado: 'Pendiente'
     }
-  ]; 
+  ];
 
-  exportarRendimiento() {
+  exportarExcel() {
 
-    const datos = this.vendedores.map(v => ({
-      Vendedor: v.nombre,
-      'Monto Vendido': v.ventas,
-      Facturas: v.facturas,
-      'Cotizaciones Enviadas': v.cotizaciones
+    const datos = this.reportesInventario.map(reporte => ({
+      nombre: reporte.nombre,
+      fecha: reporte.fecha,
+      estado: reporte.estado
     }));
 
-    const ws = XLSX.utils.json_to_sheet(datos);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(
+    const worksheet = XLSX.utils.json_to_sheet(datos);
 
+    const workbook = XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
+      workbook,
+      worksheet,
+      'Reportes'
+    );
+
+    XLSX.writeFile(
+      workbook,
+      'reportes_inventario.xlsx'
+    );
+
+  }
+
+  exportarRendimiento() {
+    const datos =
+      this.vendedores.map(v => ({
+        Vendedor: v.nombre,
+        'Monto Vendido': v.ventas,
+        Facturas: v.facturas,
+        'Cotizaciones Enviadas':
+          v.cotizaciones
+      }));
+
+    const ws =
+      XLSX.utils.json_to_sheet(datos);
+
+    const wb =
+      XLSX.utils.book_new();
+
+    XLSX.utils.book_append_sheet(
       wb,
       ws,
       'Rendimiento'
@@ -279,5 +356,5 @@ export class Reportes {
     );
 
   }
-}
 
+}
