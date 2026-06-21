@@ -5,6 +5,7 @@ import { Clientes } from './clientes/clientes';
 import { Dashboard } from './dashboard/dashboard';
 import { Reportes } from './reportes/reportes';
 import { Inventario } from './inventario/inventario';
+import { MaquinasComponent } from './maquinas/maquinas';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -13,5 +14,6 @@ export const routes: Routes = [
   { path: 'servicios', component: ServiciosComponent },
   { path: 'clientes', component: Clientes },
   { path: 'inventario', component: Inventario },
-  { path: 'reportes', component: Reportes }
+  { path: 'reportes', component: Reportes },
+  { path: 'maquinas', component: MaquinasComponent }
 ];
