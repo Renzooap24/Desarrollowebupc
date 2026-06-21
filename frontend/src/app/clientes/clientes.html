@@ -1,5 +1,4 @@
 <div class="container mt-4">
-
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
@@ -10,79 +9,84 @@
         <li class="breadcrumb-item active" aria-current="page">Clientes</li>
     </ol>
   </nav>
-
   <h2>Clientes</h2>
   <p class="text-muted">Administración de clientes</p>
-
   <div class="row mb-3">
-
     <div class="col-md-8">
       <input
         type="text"
         class="form-control"
+        [(ngModel)]="filtro"
         placeholder="Buscar clientes por nombre, código, email, empresa o teléfono...">
     </div>
-
     <div class="col-md-2">
-      <button class="btn btn-dark w-100">
-        + Nuevo Cliente
+      <button
+        class="btn btn-dark w-100"
+        (click)="mostrarNuevoCliente = true">
+          + Nuevo Cliente
       </button>
     </div>
-
     <div class="col-md-2">
-      <button class="btn btn-outline-secondary w-100">
-        Exportar
+      <button
+        class="btn btn-outline-secondary w-100"
+        (click)="exportarExcel()">
+          Exportar
       </button>
     </div>
-
   </div>
-
   <div class="row mb-4">
-
     <div class="col-md-3">
       <div class="card shadow-sm">
-        <div class="card-body">
-          <h6>Total Clientes</h6>
-          <h3>8</h3>
+        <div class="card-body d-flex align-items-center">
+          <i class="fas fa-users text-primary me-3"
+            style="font-size: 2.5rem;"></i>
+          <div>
+            <h6>Total Clientes</h6>
+            <h3>{{ totalClientes }}</h3>
+          </div>
         </div>
       </div>
     </div>
-
     <div class="col-md-3">
       <div class="card shadow-sm">
-        <div class="card-body">
-          <h6>Clientes Activos</h6>
-          <h3>7</h3>
+        <div class="card-body d-flex align-items-center">
+          <i class="fas fa-user-check text-success me-3"
+            style="font-size: 2.5rem;"></i>
+          <div>
+            <h6>Clientes Activos</h6>
+            <h3>{{ clientesActivos }}</h3>
+          </div>
         </div>
       </div>
     </div>
-
     <div class="col-md-3">
       <div class="card shadow-sm">
-        <div class="card-body">
-          <h6>Con Empresa</h6>
-          <h3>8</h3>
+        <div class="card-body d-flex align-items-center">
+          <i class="fas fa-building text-purple me-3"
+            style="font-size: 2.5rem;"></i>
+          <div>
+            <h6>Con Empresa</h6>
+            <h3>{{ clientesEmpresa }}</h3>
+          </div>
         </div>
       </div>
     </div>
-
     <div class="col-md-3">
       <div class="card shadow-sm">
-        <div class="card-body">
-          <h6>Nuevos (Este Mes)</h6>
-          <h3>4</h3>
+        <div class="card-body d-flex align-items-center">
+          <i class="fas fa-user-plus text-warning me-3"
+            style="font-size: 2.5rem;"></i>
+          <div>
+            <h6>Nuevos (Este Mes)</h6>
+            <h3>{{ nuevosClientes }}</h3>
+          </div>
         </div>
       </div>
     </div>
-
   </div>
-
   <div class="card shadow-sm">
-
     <div class="card-body">
-
       <table class="table table-hover">
-
         <thead>
           <tr>
             <th>Código</th>
@@ -96,197 +100,242 @@
             <th>Acciones</th>
           </tr>
         </thead>
-
         <tbody>
-
-          <tr>
-            <td>CLI-001</td>
-            <td>Juan Carlos Pérez Guzmán</td>
-            <td>12345678</td>
-            <td>juan@email.com</td>
-            <td>999999999</td>
-            <td>Tecnología Avanzada SAC</td>
-            <td>Lima</td>
+          <tr *ngFor="let cliente of clientesFiltrados">
+            <td>{{ cliente.codigo }}</td>
+            <td>{{ cliente.nombre }}</td>
+            <td>{{ cliente.dni }}</td>
+            <td>{{ cliente.email }}</td>
+            <td>{{ cliente.telefono }}</td>
+            <td>{{ cliente.empresa }}</td>
+            <td>{{ cliente.ciudad }}</td>
             <td>
-              <span class="badge bg-success">Activo</span>
+              <span
+                class="badge"
+                [ngClass]="{
+                  'bg-success': cliente.estado === 'Activo',
+                  'bg-danger': cliente.estado === 'Inactivo'
+                }">
+                {{ cliente.estado }}
+              </span>
             </td>
             <td>
-              <button class="btn btn-sm btn-outline-primary me-1">
+            <button
+              class="btn btn-sm btn-outline-primary me-1"
+              (click)="verCliente(cliente)">
                 <i class="fas fa-eye"></i>
               </button>
-              <button class="btn btn-sm btn-outline-warning me-1">
+              <button
+                class="btn btn-sm btn-outline-warning me-1"
+                (click)="editarCliente(cliente)">              
                 <i class="fas fa-edit"></i>
               </button>
-              <button class="btn btn-sm btn-outline-danger">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-
-          <tr>
-            <td>CLI-002</td>
-            <td>María García Tovar</td>
-            <td>87654321</td>
-            <td>maria@email.com</td>
-            <td>988888888</td>
-            <td>Innovación Digital</td>
-            <td>Arequipa</td>
-            <td>
-              <span class="badge bg-success">Activo</span>
-            </td>
-            <td>
-              <button class="btn btn-sm btn-outline-primary me-1">
-                <i class="fas fa-eye"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-warning me-1">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-danger">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-
-          <tr>
-            <td>CLI-003</td>
-            <td>Carlos Ruiz González</td>
-            <td>87654321</td>
-            <td>carlos@email.com</td>
-            <td>977777777</td>
-            <td>StartupTech</td>
-            <td>Trujillo</td>
-            <td>
-              <span class="badge bg-danger">Inactivo</span>
-            </td>
-            <td>
-              <button class="btn btn-sm btn-outline-primary me-1">
-                <i class="fas fa-eye"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-warning me-1">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-danger">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-
-          <tr>
-            <td>CLI-004</td>
-            <td>Ana López Martínez</td>
-            <td>12345678</td>
-            <td>ana@email.com</td>
-            <td>966666666</td>
-            <td>Grupo Empresarial SAC</td>
-            <td>Piura</td>
-            <td>
-              <span class="badge bg-success">Activo</span>
-            </td>
-            <td>
-              <button class="btn btn-sm btn-outline-primary me-1">
-                <i class="fas fa-eye"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-warning me-1">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-danger">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td>CLI-005</td>
-            <td>Patricia Hernández Torres</td>
-            <td>12345678</td>
-            <td>patricia@email.com</td>
-            <td>955555555</td>
-            <td>Logística Express</td>
-            <td>Cusco</td>
-            <td><span class="badge bg-success">Activo</span></td>
-            <td>
-              <button class="btn btn-sm btn-outline-primary me-1">
-                <i class="fas fa-eye"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-warning me-1">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-danger">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-
-          <tr>
-            <td>CLI-006</td>
-            <td>Fernando Jiménez López</td>
-            <td>12345678</td>
-            <td>fernando@email.com</td>
-            <td>944444444</td>
-            <td>Construcciones FJ</td>
-            <td>Chiclayo</td>
-            <td><span class="badge bg-success">Activo</span></td>
-            <td>
-              <button class="btn btn-sm btn-outline-primary me-1">
-                <i class="fas fa-eye"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-warning me-1">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-danger">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-
-          <tr>
-            <td>CLI-007</td>
-            <td>Lucía Morales Rojas</td>
-            <td>12345678</td>
-            <td>lucia@email.com</td>
-            <td>933333333</td>
-            <td>Retail Solutions</td>
-            <td>Huancayo</td>
-            <td><span class="badge bg-success">Activo</span></td>
-            <td>
-              <button class="btn btn-sm btn-outline-primary me-1">
-                <i class="fas fa-eye"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-warning me-1">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-danger">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-
-          <tr>
-            <td>CLI-008</td>
-            <td>José Ramírez Mendoza</td>
-            <td>12345678</td>
-            <td>jose@email.com</td>
-            <td>922222222</td>
-            <td>Comercial JR</td>
-            <td>Ica</td>
-            <td><span class="badge bg-success">Activo</span></td>
-            <td>
-              <button class="btn btn-sm btn-outline-primary me-1">
-                <i class="fas fa-eye"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-warning me-1">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="btn btn-sm btn-outline-danger">
+              <button
+                class="btn btn-sm btn-outline-danger"
+                (click)="eliminarCliente(cliente.codigo)">              
                 <i class="fas fa-trash"></i>
               </button>
             </td>
           </tr>
         </tbody>
-
       </table>
-
     </div>
-
   </div>
-
+  <div *ngIf="clienteSeleccionado" class="modal-backdrop-custom">
+    <div class="modal-custom">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4>
+          Detalle del Cliente
+        </h4>
+        <button
+        class="btn btn-danger"
+        (click)="clienteSeleccionado = null">
+          X
+        </button>
+      </div>
+      <table class="table">
+        <tr>
+          <th>Código</th>
+          <td>{{ clienteSeleccionado.codigo }}</td>
+        </tr>
+        <tr>
+          <th>Nombre</th>
+          <td>{{ clienteSeleccionado.nombre }}</td>
+        </tr>
+        <tr>
+          <th>DNI</th>
+          <td>{{ clienteSeleccionado.dni }}</td>
+        </tr>
+        <tr>
+          <th>Email</th>
+          <td>{{ clienteSeleccionado.email }}</td>
+        </tr>
+        <tr>
+          <th>Teléfono</th>
+          <td>{{ clienteSeleccionado.telefono }}</td>
+        </tr>
+        <tr>
+          <th>Empresa</th>
+          <td>{{ clienteSeleccionado.empresa }}</td>
+        </tr>
+        <tr>
+          <th>Ciudad</th>
+          <td>{{ clienteSeleccionado.ciudad }}</td>
+        </tr>
+        <tr>
+          <th>Estado</th>
+          <td>{{ clienteSeleccionado.estado }}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div *ngIf="mostrarEditarCliente" class="modal-backdrop-custom">
+    <div class="modal-custom">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4>
+          Editar Cliente
+        </h4>
+        <button
+        class="btn btn-danger"
+        (click)="mostrarEditarCliente = false">
+          X
+        </button>
+      </div>
+      <div class="mb-2">
+        <label>Código</label>
+        <input
+          class="form-control"
+          [(ngModel)]="clienteEditando.codigo"
+          readonly>
+      </div>
+      <div class="mb-2">
+        <label>Nombre</label>
+        <input
+          class="form-control"
+          [(ngModel)]="clienteEditando.nombre">
+      </div>
+      <div class="mb-2">
+        <label>DNI</label>
+        <input
+          class="form-control"
+          [(ngModel)]="clienteEditando.dni">
+      </div>
+      <div class="mb-2">
+        <label>Email</label>
+        <input
+          class="form-control"
+          [(ngModel)]="clienteEditando.email">
+      </div>
+      <div class="mb-2">
+        <label>Teléfono</label>
+        <input
+          class="form-control"
+          [(ngModel)]="clienteEditando.telefono">
+      </div>
+      <div class="mb-2">
+        <label>Empresa</label>
+        <input
+          class="form-control"
+          [(ngModel)]="clienteEditando.empresa">
+      </div>
+      <div class="mb-2">
+        <label>Ciudad</label>
+        <input
+          class="form-control"
+          [(ngModel)]="clienteEditando.ciudad">
+      </div>
+      <div class="mb-3">
+        <label>Estado</label>
+        <select
+          class="form-select"
+          [(ngModel)]="clienteEditando.estado">
+          <option value="Activo">
+            Activo
+          </option>
+          <option value="Inactivo">
+            Inactivo
+          </option>
+        </select>
+      </div>
+      <button
+        class="btn btn-primary w-100"
+        (click)="guardarEdicion()">
+        Guardar Cambios
+      </button>
+    </div>
+  </div>
+  <div *ngIf="mostrarNuevoCliente" class="modal-backdrop-custom">
+    <div class="modal-custom">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4>
+          Nuevo Cliente
+        </h4>
+        <button
+        class="btn btn-danger"
+        (click)="mostrarNuevoCliente = false">
+          X
+        </button>
+      </div>
+      <div class="mb-2">
+        <label>Código</label>
+        <input
+          class="form-control"
+          [(ngModel)]="nuevoCliente.codigo">
+      </div>
+      <div class="mb-2">
+        <label>Nombre</label>
+        <input
+          class="form-control"
+          [(ngModel)]="nuevoCliente.nombre">
+      </div>
+      <div class="mb-2">
+        <label>DNI</label>
+        <input
+          class="form-control"
+          [(ngModel)]="nuevoCliente.dni">
+      </div>
+      <div class="mb-2">
+        <label>Email</label>
+        <input
+          class="form-control"
+          [(ngModel)]="nuevoCliente.email">
+      </div>
+      <div class="mb-2">
+        <label>Teléfono</label>
+        <input
+          class="form-control"
+          [(ngModel)]="nuevoCliente.telefono">
+      </div>
+      <div class="mb-2">
+        <label>Empresa</label>
+        <input
+          class="form-control"
+          [(ngModel)]="nuevoCliente.empresa">
+      </div>
+      <div class="mb-2">
+        <label>Ciudad</label>
+        <input
+          class="form-control"
+          [(ngModel)]="nuevoCliente.ciudad">
+      </div>
+      <div class="mb-3">
+        <label>Estado</label>
+        <select
+          class="form-select"
+          [(ngModel)]="nuevoCliente.estado">
+          <option value="Activo">
+            Activo
+          </option>
+          <option value="Inactivo">
+            Inactivo
+          </option>
+        </select>
+      </div>
+      <button
+        class="btn btn-success w-100"
+        (click)="guardarCliente()">
+        Guardar Cliente
+      </button>
+    </div>
+  </div>
 </div>
