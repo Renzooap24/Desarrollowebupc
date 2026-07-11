@@ -1,55 +1,78 @@
 <main class="container mt-4">
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item">
-                <a routerLink="/dashboard">
-                Volver a la Página Principal
-                </a>
-            </li>
-            <li class="breadcrumb-item active" aria-current="page">Máquinas</li>
+            <li class="breadcrumb-item"><a routerLink="/dashboard">Volver a la Página Principal</a></li>
+            <li class="breadcrumb-item active">Máquinas</li>
         </ol>
     </nav>
-        
+    
     <h1 class="mb-2">Máquinas</h1>
-    <p class="text-muted mb-4">Administación de máquinas</p>
+    <p class="text-muted mb-4">Administración de máquinas</p>
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="flex-grow-1 me-2">
             <div class="input-group">
                 <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
                 <input [(ngModel)]="filtro" type="text" class="form-control" placeholder="Buscar máquinas por nombre, código...">
             </div>
         </div>
-        <button class="btn btn-outline-secondary me-2"><i class="fas fa-filter"></i> Todos los Tipos</button>
-        <button class="btn btn-primary me-2"><i class="fas fa-file-invoice"></i> Cotizaciones</button>
-        <button class="btn btn-outline-dark"><i class="fas fa-download"></i> Exportar</button>
+        <button class="btn btn-outline-secondary me-2"><i class="fas fa-filter"></i> Tipos</button>
+        <button class="btn btn-primary me-2" routerLink="/cotizaciones">
+    <i class="fas fa-file-invoice"></i> Cotizaciones</button>
+        <button class="btn btn-outline-dark" (click)="exportarExcel()"><i class="fas fa-download"></i> Exportar</button>
     </div>
 
     <section class="row g-3 mb-4">
-        <div class="col-md-3"><div class="bg-white summary-card d-flex align-items-center"><i class="fas fa-wrench text-primary me-3" style="font-size: 2rem;"></i><div><p class="mb-0 text-muted">Total Máquinas</p><h4 class="mb-0 fw-bold">{{maquinas.length}}</h4></div></div></div>
-        <div class="col-md-3"><div class="bg-white summary-card d-flex align-items-center"><i class="fas fa-check-circle text-success me-3" style="font-size: 2rem;"></i><div><p class="mb-0 text-muted">Operativas</p><h4 class="mb-0 fw-bold">1</h4></div></div></div>
-        <div class="col-md-3"><div class="bg-white summary-card d-flex align-items-center"><i class="fas fa-cog text-warning me-3" style="font-size: 2rem;"></i><div><p class="mb-0 text-muted">En Mantenimiento</p><h4 class="mb-0 fw-bold">3</h4></div></div></div>
-        <div class="col-md-3"><div class="bg-white summary-card d-flex align-items-center"><i class="fas fa-exclamation-triangle text-danger me-3" style="font-size: 2rem;"></i><div><p class="mb-0 text-muted">Fuera de Servicio</p><h4 class="mb-0 fw-bold">2</h4></div></div></div>
+        <div class="col-md-3"><div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded"><i class="fas fa-wrench text-primary me-3" style="font-size: 2rem;"></i><div><p class="mb-0 text-muted small">Total</p><h4 class="mb-0 fw-bold">{{maquinas.length}}</h4></div></div></div>
+        <div class="col-md-3"><div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded"><i class="fas fa-check-circle text-success me-3" style="font-size: 2rem;"></i><div><p class="mb-0 text-muted small">Operativas</p><h4 class="mb-0 fw-bold">1</h4></div></div></div>
+        <div class="col-md-3"><div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded"><i class="fas fa-cog text-warning me-3" style="font-size: 2rem;"></i><div><p class="mb-0 text-muted small">Mantenimiento</p><h4 class="mb-0 fw-bold">3</h4></div></div></div>
+        <div class="col-md-3"><div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded"><i class="fas fa-exclamation-triangle text-danger me-3" style="font-size: 2rem;"></i><div><p class="mb-0 text-muted small">Fuera Servicio</p><h4 class="mb-0 fw-bold">2</h4></div></div></div>
     </section>
 
-    <section class="table-container">
-        <h5 class="mb-4">Gestión de Maquinas</h5>
-        <table class="table table-hover table-striped">
-            <thead>
+    <section class="table-container bg-white shadow-sm p-4 rounded">
+        <h5 class="mb-4 fw-bold">Gestión de Máquinas</h5>
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
                 <tr>
                     <th>Código</th> <th>Nombre</th> <th>Estado</th> <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let s of maquinasFiltrados; let i = index">
-                    
-                    <td>{{ s.codigo }}</td>
+                    <td class="fw-bold">{{ s.codigo }}</td>
                     <td>{{ s.nombre }}</td>
-                    <td>{{ s.estado }}</td>
-                    
-                    <td><button class="btn btn-sm btn-info" (click)="verDetalle(i)">Ver</button></td>
+                    <td>
+                        <span class="badge bg-secondary">{{ s.estado }}</span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-info text-white" (click)="verDetalle(i)">
+                            <i class="fas fa-eye"></i> Ver
+                        </button>
+                    </td>
                 </tr>
             </tbody>
         </table>
     </section>
 </main>
+
+<div *ngIf="mostrarModalDetalle && maquinaSeleccionada" class="modal-backdrop-custom">
+    <div class="modal-custom">
+<div class="modal-header d-flex justify-content-between align-items-center p-3 border-bottom">
+    <h6 class="m-0 fw-bold">Detalle de Máquina</h6>
+    <button class="btn btn-danger btn-sm" (click)="mostrarModalDetalle = false">X</button></div>
+        <div class="p-4">
+            <div class="d-flex justify-content-between py-2 border-bottom">
+                <span class="text-muted">Código:</span>
+                <span class="fw-bold">{{ maquinaSeleccionada.codigo }}</span>
+            </div>
+            <div class="d-flex justify-content-between py-2 border-bottom">
+                <span class="text-muted">Nombre:</span>
+                <span class="fw-bold">{{ maquinaSeleccionada.nombre }}</span>
+            </div>
+            <div class="d-flex justify-content-between py-2">
+                <span class="text-muted">Estado:</span>
+                <span class="badge bg-info">{{ maquinaSeleccionada.estado }}</span>
+            </div>
+        </div>
+    </div>
+</div>

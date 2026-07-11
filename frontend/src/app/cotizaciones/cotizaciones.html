@@ -1,0 +1,73 @@
+<main class="container mt-4">
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink="/dashboard">Volver a la Página Principal</a></li>
+        <li class="breadcrumb-item active">Cotizaciones</li>
+    </ol>
+</nav>
+
+    <h1 class="mb-2">Cotizaciones</h1>
+    <p class="text-muted mb-4">Gestión y seguimiento de cotizaciones comerciales</p>
+
+    <section class="row g-3 mb-4">
+        <div class="col-md-3"><div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded"><i class="fas fa-file-invoice text-primary me-3" style="font-size: 2rem;"></i><div><p class="mb-0 text-muted small">Total</p><h4 class="mb-0 fw-bold">{{listaCotizaciones.length}}</h4></div></div></div>
+        <div class="col-md-3"><div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded"><i class="fas fa-clock text-warning me-3" style="font-size: 2rem;"></i><div><p class="mb-0 text-muted small">Pendientes</p><h4 class="mb-0 fw-bold">1</h4></div></div></div>
+        <div class="col-md-3"><div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded"><i class="fas fa-check-circle text-success me-3" style="font-size: 2rem;"></i><div><p class="mb-0 text-muted small">Aprobadas</p><h4 class="mb-0 fw-bold">3</h4></div></div></div>
+        <div class="col-md-3"><div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded"><i class="fas fa-times-circle text-danger me-3" style="font-size: 2rem;"></i><div><p class="mb-0 text-muted small">Rechazadas</p><h4 class="mb-0 fw-bold">2</h4></div></div></div>
+    </section>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="flex-grow-1 me-2">
+            <div class="input-group">
+                <span class="input-group-text bg-white"><i class="fas fa-search"></i></span>
+                <input [(ngModel)]="filtro" type="text" class="form-control" placeholder="Buscar por cliente, ID...">
+            </div>
+        </div>
+        <button class="btn btn-outline-dark" (click)="exportarExcel()"><i class="fas fa-download"></i> Exportar</button>
+    </div>
+
+    <section class="table-container bg-white shadow-sm p-4 rounded">
+        <h5 class="mb-4 fw-bold">Historial de Cotizaciones</h5>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr><th>ID</th><th>Cliente</th><th>Fecha</th><th>Total</th><th>Estado</th><th>Acciones</th></tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let c of cotizacionesFiltradas">
+                        <td>{{ c.id }}</td>
+                        <td>{{ c.cliente }}</td>
+                        <td>{{ c.fecha }}</td>
+                        <td class="fw-bold">S/ {{ c.total | number:'1.2-2' }}</td>
+                        <td>
+                            <span class="badge" [ngClass]="{'bg-warning': c.estado === 'Pendiente', 'bg-success': c.estado === 'Aprobada', 'bg-danger': c.estado === 'Rechazada'}">
+                                {{ c.estado }}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-info text-white" (click)="verDetalle(c)"><i class="fas fa-eye"></i> Ver</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<div *ngIf="mostrarDetalle" class="modal-backdrop-custom">
+    <div class="modal-custom">
+        <div class="modal-header d-flex justify-content-between align-items-center p-3 border-bottom">
+            <h5 class="m-0 fw-bold">Detalle de Cotización</h5>
+            <button class="btn btn-danger btn-sm" (click)="cerrarDetalle()">X</button>
+        </div>
+        <div class="modal-body p-4">
+            <p class="text-muted mb-1 small">ID:</p><h6 class="fw-bold mb-3">{{ cotizacionSeleccionada?.id }}</h6>
+            <p class="text-muted mb-1 small">Cliente:</p><h6 class="fw-bold mb-3">{{ cotizacionSeleccionada?.cliente }}</h6>
+            <p class="text-muted mb-1 small">Total:</p><h6 class="fw-bold mb-3">S/ {{ cotizacionSeleccionada?.total | number:'1.2-2' }}</h6>
+            <p class="text-muted mb-1 small">Estado:</p>
+            <span class="badge" [ngClass]="{'bg-warning': cotizacionSeleccionada?.estado === 'Pendiente', 'bg-success': cotizacionSeleccionada?.estado === 'Aprobada'}">
+                {{ cotizacionSeleccionada?.estado }}
+            </span>
+        </div>
+    </div>
+</div>

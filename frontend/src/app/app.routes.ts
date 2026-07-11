@@ -7,6 +7,7 @@ import { Reportes } from './reportes/reportes';
 import { Inventario } from './inventario/inventario';
 import { MaquinasComponent } from './maquinas/maquinas';
 import { Finanzas } from './finanzas/finanzas';
+import { Cotizaciones } from './cotizaciones/cotizaciones';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'login', pathMatch: 'full' },
@@ -17,5 +18,6 @@ export const routes: Routes = [
   { path: 'inventario', component: Inventario },
   { path: 'reportes', component: Reportes },
   { path: 'maquinas', component: MaquinasComponent },
-  { path: 'finanzas', component: Finanzas }  
+  { path: 'finanzas', component: Finanzas },
+  { path: 'cotizaciones', component: Cotizaciones }
 ];

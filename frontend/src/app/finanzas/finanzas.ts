@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import * as XLSX from 'xlsx';
+import { StorageService } from '../core/services/storage.service';
+import { ExportService } from '../core/services/export.service';
 import jsPDF from 'jspdf';
 
 @Component({
@@ -16,64 +17,31 @@ import jsPDF from 'jspdf';
   templateUrl: './finanzas.html',
   styleUrl: './finanzas.css'
 })
-export class Finanzas {
-
+export class Finanzas implements OnInit { 
+  
   filtro = '';
 
   facturas: any[] = [];
 
-  constructor() {
+  constructor(
+    private storageService: StorageService,
+    private exportService: ExportService
+  ) {}
 
-    const datosGuardados =
-      localStorage.getItem('facturas');
+  ngOnInit() {
+    const datosGuardados = this.storageService.get('facturas');
 
     if (datosGuardados) {
-
-      this.facturas =
-        JSON.parse(datosGuardados);
-
+      this.facturas = datosGuardados;
     } else {
-
       this.facturas = [
-
-        {
-          numero: 'FAC-001',
-          cliente: 'Empresa A',
-          fecha: '2024-02-20',
-          monto: 2500,
-          estado: 'Pagada'
-        },
-        {
-          numero: 'FAC-002',
-          cliente: 'Empresa B',
-          fecha: '2024-02-18',
-          monto: 1800.50,
-          estado: 'Pendiente'
-        },
-        {
-          numero: 'FAC-003',
-          cliente: 'Empresa C',
-          fecha: '2024-02-19',
-          monto: 3200,
-          estado: 'Pagada'
-        }
-
+        { numero: 'FAC-001', cliente: 'Empresa A', fecha: '2024-02-20', monto: 2500, estado: 'Pagada' },
+        { numero: 'FAC-002', cliente: 'Empresa B', fecha: '2024-02-18', monto: 1800.50, estado: 'Pendiente' },
+        { numero: 'FAC-003', cliente: 'Empresa C', fecha: '2024-02-19', monto: 3200, estado: 'Pagada' }
       ];
-
-      this.guardarLocalStorage();
-
+      this.storageService.save('facturas', this.facturas);
     }
-
   }
-
-  guardarLocalStorage() {
-
-    localStorage.setItem(
-      'facturas',
-      JSON.stringify(this.facturas)
-    );
-
-  }  
   get facturasFiltradas() {
 
     if (!this.filtro) {
@@ -178,7 +146,7 @@ export class Finanzas {
       ...this.nuevaFactura
     });
 
-    this.guardarLocalStorage();
+    this.storageService.save('facturas', this.facturas);
 
     this.nuevaFactura = {
       numero: '',
@@ -203,7 +171,7 @@ export class Finanzas {
 
     factura.estado = 'Anulada';
 
-    this.guardarLocalStorage();
+    this.storageService.save('facturas', this.facturas);
   }
 
   editarFactura(factura: any) {
@@ -237,7 +205,7 @@ export class Finanzas {
       facturaOriginal.estado =
         this.facturaEditando.estado;
 
-      this.guardarLocalStorage();
+      this.storageService.save('facturas', this.facturas);
 
     }
 
@@ -245,66 +213,29 @@ export class Finanzas {
 
   }
 
-  exportarExcel() {
+exportarExcel() {
+  const datos = this.facturas.map(f => ({
+    'N° Factura': f.numero,
+    'Cliente': f.cliente,
+    'Fecha Emisión': f.fecha,
+    'Monto (S/)': f.monto,
+    'Estado': f.estado
+  }));
 
-    const datos = this.facturas.map(f => ({
-      'N° Factura': f.numero,
-      'Cliente': f.cliente,
-      'Fecha Emisión': f.fecha,
-      'Monto (S/)': f.monto,
-      'Estado': f.estado
-    }));
+  this.exportService.exportToExcel(datos, 'reporte_facturas', 'Facturas');
+}
 
-    const hoja = XLSX.utils.json_to_sheet(datos);
+exportarReporteInventario() {
+  const datos = this.inventario.map(item => ({
+    SKU: item.sku,
+    Producto: item.producto,
+    Stock: item.stock,
+    'Costo Unitario': item.costo,
+    'Valor Total': item.total
+  }));
 
-    const libro = XLSX.utils.book_new();
-
-    XLSX.utils.book_append_sheet(
-      libro,
-      hoja,
-      'Facturas'
-    );
-
-    XLSX.writeFile(
-      libro,
-      'reporte_facturas.xlsx'
-    );
-  }  
-
-  exportarReporteInventario() {
-
-    const datos = this.inventario.map(item => ({
-
-      SKU: item.sku,
-
-      Producto: item.producto,
-
-      Stock: item.stock,
-
-      'Costo Unitario': item.costo,
-
-      'Valor Total': item.total
-
-    }));
-
-    const hoja = XLSX.utils.json_to_sheet(
-      datos
-    );
-
-    const libro = XLSX.utils.book_new();
-
-    XLSX.utils.book_append_sheet(
-      libro,
-      hoja,
-      'Inventario'
-    );
-
-    XLSX.writeFile(
-      libro,
-      'reporte_financiero_inventario.xlsx'
-    );
-
-  }
+  this.exportService.exportToExcel(datos, 'reporte_financiero_inventario', 'Inventario');}
+  
 
   generarPDF(factura: any) {
 
@@ -350,5 +281,6 @@ export class Finanzas {
     );
 
   }
+  
 
 }
