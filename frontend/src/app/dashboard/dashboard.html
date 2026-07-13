@@ -133,12 +133,11 @@
     </div>
 
     <div class="row mt-5">
-
         <div class="col-md-3">
             <div class="card summary-card">
                 <div class="card-body text-center">
                     <div class="fs-1 mb-2">📦</div>
-                    <h2>1247</h2>
+                    <h2>{{ totales().totalproductos }}</h2>
                     <p class="text-muted">Productos</p>
                  </div>
             </div>
@@ -148,7 +147,7 @@
             <div class="card summary-card">
                 <div class="card-body text-center">
                     <div class="fs-1 mb-2">👥</div>
-                    <h2>342</h2>
+                    <h2>{{ totales().totalclientes }}</h2>
                     <p class="text-muted">Clientes</p>                    
                 </div>
             </div>
@@ -158,7 +157,7 @@
             <div class="card summary-card">
                 <div class="card-body text-center">
                     <div class="fs-1 mb-2">⚙️</div>
-                    <h2>89</h2>
+                    <h2>{{ totales().totalmaquinas }}</h2>
                     <p class="text-muted">Máquinas</p>    
                 </div>
             </div>
@@ -168,7 +167,7 @@
             <div class="card summary-card">
                 <div class="card-body text-center">
                     <div class="fs-1 mb-2">🔧</div>
-                    <h2>156</h2>
+                    <h2>{{ totales().totalservicios }}</h2>
                     <p class="text-muted">Servicios</p>    
                 </div>
             </div>

@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import * as XLSX from 'xlsx';
+
+import { ClientesService } from '../services/clientes-service';
 
 @Component({
   selector: 'app-clientes',
@@ -15,80 +17,55 @@ import * as XLSX from 'xlsx';
   templateUrl: './clientes.html',
   styleUrl: './clientes.css'
 })
-
 export class Clientes {
 
   filtro = '';
 
   clientes: any[] = [];
 
-  constructor() {
+  totalesClientes = signal<any>({
+    totalclientes: 0,
+    totalactivos: 0,
+    totalempresa: 0,
+    totalnuevos: 0
+  });
 
-    const datosGuardados =
-      localStorage.getItem('clientes');
+  constructor(
+    private readonly cli: ClientesService
+  ) { }
 
-    if (datosGuardados) {
+  ngOnInit(): void {
+    this._mostrar_totales_clientes();
+    this._mostrar_lista_clientes();
+  }
 
-      this.clientes =
-        JSON.parse(datosGuardados);
+  private _mostrar_totales_clientes() {
 
-    } else {
+    this.cli.obtener_totales_clientes()
+      .subscribe((rest: any) => {
 
-      this.clientes = [
+        console.log('Totales:', rest);
 
-        {
-          codigo: 'CLI-001',
-          nombre: 'Juan Carlos Pérez Guzmán',
-          dni: '12345678',
-          email: 'juan@email.com',
-          telefono: '999999999',
-          empresa: 'Tecnología Avanzada SAC',
-          ciudad: 'Lima',
-          estado: 'Activo'
-        },
+        this.totalesClientes.set(rest.data[0]);
 
-        {
-          codigo: 'CLI-002',
-          nombre: 'María García Tovar',
-          dni: '87654321',
-          email: 'maria@email.com',
-          telefono: '988888888',
-          empresa: 'Innovación Digital',
-          ciudad: 'Arequipa',
-          estado: 'Activo'
-        },
-
-        {
-          codigo: 'CLI-003',
-          nombre: 'Carlos Ruiz González',
-          dni: '76543210',
-          email: 'carlos@email.com',
-          telefono: '977777777',
-          empresa: 'StartupTech',
-          ciudad: 'Trujillo',
-          estado: 'Inactivo'
-        }
-
-      ];
-
-      this.guardarLocalStorage();
-
-    }
+      });
 
   }
 
-  guardarLocalStorage() {
+  private _mostrar_lista_clientes() {
 
-    localStorage.setItem(
-      'clientes',
-      JSON.stringify(this.clientes)
-    );
+    this.cli.obtener_lista_clientes()
+      .subscribe((rest: any) => {
+
+        console.log('Clientes:', rest);
+
+        this.clientes = rest.data;
+
+      });
 
   }
 
   get clientesFiltrados() {
-
-    console.log('Filtro:', this.filtro);
 
     if (!this.filtro) {
       return this.clientes;
@@ -99,26 +76,7 @@ export class Clientes {
       c.codigo.toLowerCase().includes(this.filtro.toLowerCase()) ||
       c.email.toLowerCase().includes(this.filtro.toLowerCase())
     );
-  }
 
-  get totalClientes() {
-    return this.clientes.length;
-  }
-
-  get clientesActivos() {
-    return this.clientes.filter(
-      x => x.estado === 'Activo'
-    ).length;
-  }
-
-  get clientesEmpresa() {
-    return this.clientes.filter(
-      x => x.empresa
-    ).length;
-  }
-
-  get nuevosClientes() {
-    return 3;
   }
 
   clienteSeleccionado: any = null;
@@ -146,31 +104,49 @@ export class Clientes {
       !this.nuevoCliente.email
     ) {
 
-      alert(
-        'Complete los campos obligatorios'
-      );
+      alert('Complete los campos obligatorios');
 
       return;
+
     }
 
-    this.clientes.push({
-      ...this.nuevoCliente
-    });
+    this.cli.crear_clientes(this.nuevoCliente)
+      .subscribe({
 
-    this.guardarLocalStorage();
+        next: (rest: any) => {
 
-    this.nuevoCliente = {
-      codigo: '',
-      nombre: '',
-      dni: '',
-      email: '',
-      telefono: '',
-      empresa: '',
-      ciudad: '',
-      estado: 'Activo'
-    };
+          console.log('Cliente creado:', rest);
 
-    this.mostrarNuevoCliente = false;
+          alert('Cliente registrado correctamente.');
+
+          this._mostrar_lista_clientes();
+
+          this._mostrar_totales_clientes();
+
+          this.nuevoCliente = {
+            codigo: '',
+            nombre: '',
+            dni: '',
+            email: '',
+            telefono: '',
+            empresa: '',
+            ciudad: '',
+            estado: 'Activo'
+          };
+
+          this.mostrarNuevoCliente = false;
+
+        },
+
+        error: (err) => {
+
+          console.error(err);
+
+          alert('Error al registrar el cliente.');
+
+        }
+
+      });
 
   }
 
@@ -194,47 +170,55 @@ export class Clientes {
     this.mostrarEditarCliente = true;
 
   }
-  
+
   guardarEdicion() {
 
-    const clienteOriginal =
-      this.clientes.find(
-        c => c.codigo === this.clienteEditando.codigo
-      );
+    this.cli.editar_clientes(this.clienteEditando)
+      .subscribe({
 
-    if (clienteOriginal) {
+        next: (rest: any) => {
 
-      clienteOriginal.nombre =
-        this.clienteEditando.nombre;
+          console.log('Cliente actualizado:', rest);
 
-      clienteOriginal.dni =
-        this.clienteEditando.dni;
+          alert('Cliente actualizado correctamente.');
 
-      clienteOriginal.email =
-        this.clienteEditando.email;
+          // Recargar la lista desde la BD
+          this._mostrar_lista_clientes();
 
-      clienteOriginal.telefono =
-        this.clienteEditando.telefono;
+          // Actualizar los indicadores superiores
+          this._mostrar_totales_clientes();
 
-      clienteOriginal.empresa =
-        this.clienteEditando.empresa;
+          // Cerrar el modal
+          this.mostrarEditarCliente = false;
 
-      clienteOriginal.ciudad =
-        this.clienteEditando.ciudad;
+        },
 
-      clienteOriginal.estado =
-        this.clienteEditando.estado;
+        error: (err) => {
 
-    }
+          console.error(err);
 
-    this.guardarLocalStorage();
-    this.mostrarEditarCliente = false;
+          alert('Error al actualizar el cliente.');
+
+        }
+
+      });
 
   }
 
   verCliente(cliente: any) {
+
     this.clienteSeleccionado = cliente;
-  } 
+
+    /*
+    Si posteriormente deseas traer el detalle desde AWS:
+
+    this.cli.obtener_vista_cliente(cliente.codigo)
+      .subscribe((rest: any) => {
+        this.clienteSeleccionado = rest.data[0];
+      });
+    */
+
+  }
 
   eliminarCliente(codigo: string) {
 
@@ -246,12 +230,33 @@ export class Clientes {
       return;
     }
 
-    this.clientes = this.clientes.filter(
-      cliente => cliente.codigo !== codigo
-    );
+    this.cli.eliminar_clientes(codigo)
+      .subscribe({
 
-    this.guardarLocalStorage();
-    
+        next: (rest: any) => {
+
+          console.log('Cliente eliminado:', rest);
+
+          alert('Cliente eliminado correctamente.');
+
+          // refrescar la lista desde la BD
+          this._mostrar_lista_clientes();
+
+          // actualizar indicadores
+          this._mostrar_totales_clientes();
+
+        },
+
+        error: (err) => {
+
+          console.error(err);
+
+          alert('Error al eliminar el cliente.');
+
+        }
+
+      });
+
   }
 
   exportarExcel() {
@@ -259,19 +264,12 @@ export class Clientes {
     const datos = this.clientes.map(cliente => ({
 
       Codigo: cliente.codigo,
-
       Nombre: cliente.nombre,
-
       DNI: cliente.dni,
-
       Email: cliente.email,
-
       Telefono: cliente.telefono,
-
       Empresa: cliente.empresa,
-
       Ciudad: cliente.ciudad,
-
       Estado: cliente.estado
 
     }));

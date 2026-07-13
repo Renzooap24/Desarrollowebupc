@@ -25,7 +25,7 @@
                     <div>
                         <p class="mb-0 text-muted">Reportes Generados</p>
                         <h4 class="mb-0 fw-bold">
-                            {{ totalReportes }}
+                            {{ totalesReportes().totalgenerados }}
                         </h4>
                     </div>
                 </div>
@@ -36,7 +36,7 @@
                     <div>
                         <p class="mb-0 text-muted">Reportes Activos</p>
                         <h4 class="mb-0 fw-bold">
-                            {{ reportesActivos }}
+                            {{ totalesReportes().totalactivos }}
                         </h4>
                     </div>
                 </div>
@@ -47,7 +47,7 @@
                     <div>
                         <p class="mb-0 text-muted">Reportes Archivados</p>
                         <h4 class="mb-0 fw-bold">
-                            {{ reportesArchivados }}
+                            {{ totalesReportes().totalarchivados }}
                         </h4>
                     </div>
                 </div>
@@ -114,7 +114,7 @@
                             </thead>
                             <tbody>
                                 <tr *ngFor="let reporte of reportesFiltrados">
-                                    <td>{{ reporte.id }}</td>
+                                    <td>{{ reporte.id_reporte }}</td>
                                     <td>{{ reporte.nombre }}</td>
                                     <td>{{ reporte.fecha }}</td>
                                     <td>
@@ -140,7 +140,7 @@
                                         </button>
                                         <button
                                         class="btn btn-sm btn-danger"
-                                        (click)="eliminarReporte(reporte.id)">
+                                        (click)="eliminarReporte(reporte.id_reporte)">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </td>

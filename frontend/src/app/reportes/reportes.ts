@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import * as XLSX from 'xlsx';
+
+import { ReportesService } from '../services/reportes-service';
 
 @Component({
   selector: 'app-reportes',
@@ -15,205 +17,303 @@ import * as XLSX from 'xlsx';
   templateUrl: './reportes.html',
   styleUrl: './reportes.css'
 })
-
 export class Reportes implements OnInit {
 
+  constructor(
+    private readonly rep: ReportesService
+  ) { }
+
   pestanaActiva = 'inventario';
+
   textoBusqueda = '';
 
   mostrarModal = false;
+
   reporteSeleccionado: any = null;
 
   modoEdicion = false;
 
-  ngOnInit() {
+  totalesReportes = signal<any>({
+    totalgenerados: 0,
+    totalactivos: 0,
+    totalarchivados: 0
+  });
 
-    const datosGuardados =
-      localStorage.getItem('reportesInventario');
+  reportesInventario: any[] = [];
 
-    if (datosGuardados) {
+  ngOnInit(): void {
 
-      this.reportesInventario =
-        JSON.parse(datosGuardados);
+    this._mostrar_totales_reportes();
 
-    }
-
-  }
-
-  guardarLocalStorage() {
-
-    localStorage.setItem(
-      'reportesInventario',
-      JSON.stringify(this.reportesInventario)
-    );
+    this._mostrar_lista_reportes();
 
   }
 
-  cambiarPestana(pestana: string) {
-    this.pestanaActiva = pestana;
+  private _mostrar_totales_reportes() {
+
+    this.rep.obtener_totales_reportes()
+      .subscribe((rest: any) => {
+
+        console.log(
+          'Totales reportes:',
+          rest
+        );
+
+        this.totalesReportes.set(
+          rest.data[0]
+        );
+
+      });
+
   }
 
-  reportesInventario = [
-    {
-      id: 1,
-      nombre: 'Stock General de Almacén',
-      fecha: '2026-06-01',
-      estado: 'Activo'
-    },
-    {
-      id: 2,
-      nombre: 'Productos con Bajo Stock',
-      fecha: '2026-06-15',
-      estado: 'Activo'
-    },
-    {
-      id: 3,
-      nombre: 'Inventario Mensual',
-      fecha: '2026-05-30',
-      estado: 'Archivado'
-    }
-  ];
+  private _mostrar_lista_reportes() {
+
+    this.rep.obtener_lista_reportes()
+      .subscribe((rest: any) => {
+
+        console.log(
+          'Lista reportes:',
+          rest
+        );
+
+        this.reportesInventario =
+          rest.data;
+
+      });
+
+  }
+
+  cambiarPestana(
+    pestana: string
+  ) {
+
+    this.pestanaActiva =
+      pestana;
+
+  }
 
   get reportesFiltrados() {
 
     if (!this.textoBusqueda) {
+
       return this.reportesInventario;
+
     }
 
-    return this.reportesInventario.filter(reporte =>
-      reporte.nombre
-        .toLowerCase()
-        .includes(this.textoBusqueda.toLowerCase()) ||
-      reporte.fecha.includes(this.textoBusqueda)
+    return this.reportesInventario.filter(
+      reporte =>
+
+        reporte.nombre
+          .toLowerCase()
+          .includes(
+            this.textoBusqueda
+              .toLowerCase()
+          )
+
+        ||
+
+        reporte.fecha
+          .includes(
+            this.textoBusqueda
+          )
+
     );
+
   }
 
-  eliminarReporte(id: number) {
+  eliminarReporte(
+    id_reporte: number
+  ) {
 
-    const confirmar = confirm(
-      '¿Desea eliminar el reporte?'
-    );
+    const confirmar =
+      confirm(
+        '¿Desea eliminar el reporte?'
+      );
 
-    if (confirmar) {
+    if (!confirmar) {
+      return;
+    }
 
-      this.reportesInventario =
-        this.reportesInventario.filter(
-          reporte => reporte.id !== id
+    this.rep.eliminar_reportes(
+      id_reporte.toString()
+    )
+    .subscribe({
+
+      next: (rest: any) => {
+
+        console.log(
+          'Reporte eliminado:',
+          rest
         );
 
-      this.guardarLocalStorage();
+        alert(
+          'Reporte eliminado correctamente.'
+        );
 
-    }
-  }
+        // Recargar lista desde BD
+        this._mostrar_lista_reportes();
 
-  get totalReportes() {
-    return this.reportesInventario.length;
-  }
+        // Actualizar indicadores
+        this._mostrar_totales_reportes();
 
-  get reportesActivos() {
-    return this.reportesInventario.filter(
-      x => x.estado === 'Activo'
-    ).length;
-  }
+      },
 
-  get reportesArchivados() {
-    return this.reportesInventario.filter(
-      x => x.estado === 'Archivado'
-    ).length;
-  }
+      error: (err) => {
 
+        console.error(err);
+
+        alert(
+          'Error al eliminar el reporte.'
+        );
+
+      }
+
+    });
+
+  }  
+  
   agregarReporte() {
 
-    this.modoEdicion = false;
+    this.modoEdicion =
+      false;
 
     this.reporteSeleccionado = {
-      id: 0,
+      id_reporte: 0,
       nombre: '',
       fecha: '',
       estado: 'Activo'
     };
 
-    this.mostrarModal = true;
-  }
-
-  obtenerNuevoId(): number {
-
-    if (this.reportesInventario.length === 0) {
-      return 1;
-    }
-
-    return Math.max(
-      ...this.reportesInventario.map(
-        r => r.id
-      )
-    ) + 1;
+    this.mostrarModal =
+      true;
 
   }
 
-  verReporte(reporte: any) {
+  verReporte(
+    reporte: any
+  ) {
 
     alert(
-`Reporte: ${reporte.nombre}
-Fecha: ${reporte.fecha}
-Estado: ${reporte.estado}`
+      `Reporte: ${reporte.nombre}
+      Fecha: ${reporte.fecha}
+      Estado: ${reporte.estado}`
     );
 
   }
 
-  editarReporte(reporte: any) {
+  editarReporte(
+    reporte: any
+  ) {
 
-    this.modoEdicion = true;
+    this.modoEdicion =
+      true;
 
     this.reporteSeleccionado = {
       ...reporte
     };
 
-    this.mostrarModal = true;
+    this.mostrarModal =
+      true;
+
   }
 
   cerrarModal() {
 
-    this.mostrarModal = false;
+    this.mostrarModal =
+      false;
 
   }
 
   guardarCambios() {
 
+    // EDITAR
     if (this.modoEdicion) {
 
-      const indice =
-        this.reportesInventario.findIndex(
-          x => x.id === this.reporteSeleccionado.id
-        );
+      this.rep.editar_reportes(
+        this.reporteSeleccionado
+      )
+      .subscribe({
 
-      if (indice !== -1) {
+        next: (rest: any) => {
 
-        this.reportesInventario[indice] = {
-          ...this.reporteSeleccionado
-        };
+          console.log(
+            'Reporte actualizado:',
+            rest
+          );
 
-      }
+          alert(
+            'Reporte actualizado correctamente.'
+          );
 
-    } else {
+          // Recargar lista desde BD
+          this._mostrar_lista_reportes();
 
-      const nuevoReporte = {
-        ...this.reporteSeleccionado,
-        id: this.obtenerNuevoId()
-      };
+          // Actualizar indicadores
+          this._mostrar_totales_reportes();
 
-      this.reportesInventario.push(
-        nuevoReporte
-      );
+          // Cerrar modal
+          this.mostrarModal = false;
+
+        },
+
+        error: (err) => {
+
+          console.error(err);
+
+          alert(
+            'Error al actualizar el reporte.'
+          );
+
+        }
+
+      });
+
+      return;
 
     }
 
-    this.guardarLocalStorage();
+    // CREAR
+    this.rep.crear_reportes(
+      this.reporteSeleccionado
+    )
+    .subscribe({
 
-    this.mostrarModal = false;
+      next: (rest: any) => {
+
+        console.log(
+          'Reporte creado:',
+          rest
+        );
+
+        alert(
+          'Reporte registrado correctamente.'
+        );
+
+        this._mostrar_lista_reportes();
+
+        this._mostrar_totales_reportes();
+
+        this.mostrarModal = false;
+
+      },
+
+      error: (err) => {
+
+        console.error(err);
+
+        alert(
+          'Error al registrar el reporte.'
+        );
+
+      }
+
+    });
 
   }
 
   mostrarDetalle = false;
+
   vendedorSeleccionado: any = null;
 
   vendedores = [
@@ -243,18 +343,22 @@ Estado: ${reporte.estado}`
     }
   ];
 
-  verDetalle(vendedor: any) {
+  verDetalle(
+    vendedor: any
+  ) {
 
     this.vendedorSeleccionado =
       vendedor;
 
-    this.mostrarDetalle = true;
+    this.mostrarDetalle =
+      true;
 
   }
 
   cerrarDetalle() {
 
-    this.mostrarDetalle = false;
+    this.mostrarDetalle =
+      false;
 
   }
 
@@ -305,15 +409,29 @@ Estado: ${reporte.estado}`
 
   exportarExcel() {
 
-    const datos = this.reportesInventario.map(reporte => ({
-      nombre: reporte.nombre,
-      fecha: reporte.fecha,
-      estado: reporte.estado
-    }));
+    const datos =
+      this.reportesInventario.map(
+        reporte => ({
 
-    const worksheet = XLSX.utils.json_to_sheet(datos);
+          Nombre:
+            reporte.nombre,
 
-    const workbook = XLSX.utils.book_new();
+          Fecha:
+            reporte.fecha,
+
+          Estado:
+            reporte.estado
+
+        })
+      );
+
+    const worksheet =
+      XLSX.utils.json_to_sheet(
+        datos
+      );
+
+    const workbook =
+      XLSX.utils.book_new();
 
     XLSX.utils.book_append_sheet(
       workbook,
@@ -329,17 +447,30 @@ Estado: ${reporte.estado}`
   }
 
   exportarRendimiento() {
+
     const datos =
-      this.vendedores.map(v => ({
-        Vendedor: v.nombre,
-        'Monto Vendido': v.ventas,
-        Facturas: v.facturas,
-        'Cotizaciones Enviadas':
-          v.cotizaciones
-      }));
+      this.vendedores.map(
+        v => ({
+
+          Vendedor:
+            v.nombre,
+
+          'Monto Vendido':
+            v.ventas,
+
+          Facturas:
+            v.facturas,
+
+          'Cotizaciones Enviadas':
+            v.cotizaciones
+
+        })
+      );
 
     const ws =
-      XLSX.utils.json_to_sheet(datos);
+      XLSX.utils.json_to_sheet(
+        datos
+      );
 
     const wb =
       XLSX.utils.book_new();
