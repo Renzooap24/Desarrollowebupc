@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
@@ -17,11 +17,17 @@ import { ClientesService } from '../services/clientes-service';
   templateUrl: './clientes.html',
   styleUrl: './clientes.css'
 })
-export class Clientes {
+export class Clientes implements OnInit {
 
   filtro = '';
 
   clientes: any[] = [];
+
+  clienteSeleccionado: any = null;
+
+  mostrarEditarCliente = false;
+
+  mostrarNuevoCliente = false;
 
   totalesClientes = signal<any>({
     totalclientes: 0,
@@ -29,61 +35,6 @@ export class Clientes {
     totalempresa: 0,
     totalnuevos: 0
   });
-
-  constructor(
-    private readonly cli: ClientesService
-  ) { }
-
-  ngOnInit(): void {
-    this._mostrar_totales_clientes();
-    this._mostrar_lista_clientes();
-  }
-
-  private _mostrar_totales_clientes() {
-
-    this.cli.obtener_totales_clientes()
-      .subscribe((rest: any) => {
-
-        console.log('Totales:', rest);
-
-        this.totalesClientes.set(rest.data[0]);
-
-      });
-
-  }
-
-  private _mostrar_lista_clientes() {
-
-    this.cli.obtener_lista_clientes()
-      .subscribe((rest: any) => {
-
-        console.log('Clientes:', rest);
-
-        this.clientes = rest.data;
-
-      });
-
-  }
-
-  get clientesFiltrados() {
-
-    if (!this.filtro) {
-      return this.clientes;
-    }
-
-    return this.clientes.filter(c =>
-      c.nombre.toLowerCase().includes(this.filtro.toLowerCase()) ||
-      c.codigo.toLowerCase().includes(this.filtro.toLowerCase()) ||
-      c.email.toLowerCase().includes(this.filtro.toLowerCase())
-    );
-
-  }
-
-  clienteSeleccionado: any = null;
-
-  mostrarEditarCliente = false;
-
-  mostrarNuevoCliente = false;
 
   nuevoCliente = {
     codigo: '',
@@ -96,60 +47,6 @@ export class Clientes {
     estado: 'Activo'
   };
 
-  guardarCliente() {
-
-    if (
-      !this.nuevoCliente.codigo ||
-      !this.nuevoCliente.nombre ||
-      !this.nuevoCliente.email
-    ) {
-
-      alert('Complete los campos obligatorios');
-
-      return;
-
-    }
-
-    this.cli.crear_clientes(this.nuevoCliente)
-      .subscribe({
-
-        next: (rest: any) => {
-
-          console.log('Cliente creado:', rest);
-
-          alert('Cliente registrado correctamente.');
-
-          this._mostrar_lista_clientes();
-
-          this._mostrar_totales_clientes();
-
-          this.nuevoCliente = {
-            codigo: '',
-            nombre: '',
-            dni: '',
-            email: '',
-            telefono: '',
-            empresa: '',
-            ciudad: '',
-            estado: 'Activo'
-          };
-
-          this.mostrarNuevoCliente = false;
-
-        },
-
-        error: (err) => {
-
-          console.error(err);
-
-          alert('Error al registrar el cliente.');
-
-        }
-
-      });
-
-  }
-
   clienteEditando: any = {
     codigo: '',
     nombre: '',
@@ -161,121 +58,318 @@ export class Clientes {
     estado: 'Activo'
   };
 
-  editarCliente(cliente: any) {
+  constructor(
+    private readonly cli: ClientesService
+  ) { }
+
+  ngOnInit(): void {
+
+    this._mostrar_totales_clientes();
+
+    this._mostrar_lista_clientes();
+
+  }
+
+  private _mostrar_totales_clientes() {
+
+    this.cli.obtener_totales_clientes()
+      .subscribe((rest: any) => {
+
+        console.log(
+          'Totales clientes:',
+          rest
+        );
+
+        this.totalesClientes.set(
+          rest.data[0]
+        );
+
+      });
+
+  }
+
+  private _mostrar_lista_clientes() {
+
+    this.cli.obtener_lista_clientes()
+      .subscribe((rest: any) => {
+
+        console.log(
+          'Lista clientes:',
+          rest
+        );
+
+        this.clientes =
+          rest.data;
+
+      });
+
+  }
+
+  get clientesFiltrados() {
+
+    if (!this.filtro) {
+      return this.clientes;
+    }
+
+    return this.clientes.filter(
+      cliente =>
+
+        cliente.nombre
+          .toLowerCase()
+          .includes(
+            this.filtro.toLowerCase()
+          )
+
+        ||
+
+        cliente.codigo
+          .toLowerCase()
+          .includes(
+            this.filtro.toLowerCase()
+          )
+
+        ||
+
+        cliente.email
+          .toLowerCase()
+          .includes(
+            this.filtro.toLowerCase()
+          )
+
+        ||
+
+        cliente.telefono
+          .includes(
+            this.filtro
+          )
+
+        ||
+
+        cliente.empresa
+          ?.toLowerCase()
+          .includes(
+            this.filtro.toLowerCase()
+          )
+
+    );
+
+  }
+
+  verCliente(
+    cliente: any
+  ) {
+
+    this.clienteSeleccionado =
+      cliente;
+
+  }
+
+  editarCliente(
+    cliente: any
+  ) {
 
     this.clienteEditando = {
       ...cliente
     };
 
-    this.mostrarEditarCliente = true;
+    this.mostrarEditarCliente =
+      true;
 
   }
 
   guardarEdicion() {
 
-    this.cli.editar_clientes(this.clienteEditando)
-      .subscribe({
+    this.cli.editar_clientes(
+      this.clienteEditando
+    )
+    .subscribe({
 
-        next: (rest: any) => {
+      next: (rest: any) => {
 
-          console.log('Cliente actualizado:', rest);
+        console.log(
+          'Cliente actualizado:',
+          rest
+        );
 
-          alert('Cliente actualizado correctamente.');
+        alert(
+          'Cliente actualizado correctamente.'
+        );
 
-          // Recargar la lista desde la BD
-          this._mostrar_lista_clientes();
+        this._mostrar_lista_clientes();
 
-          // Actualizar los indicadores superiores
-          this._mostrar_totales_clientes();
+        this._mostrar_totales_clientes();
 
-          // Cerrar el modal
-          this.mostrarEditarCliente = false;
+        this.mostrarEditarCliente =
+          false;
 
-        },
+      },
 
-        error: (err) => {
+      error: (err) => {
 
-          console.error(err);
+        console.error(err);
 
-          alert('Error al actualizar el cliente.');
+        alert(
+          'Error al actualizar el cliente.'
+        );
 
-        }
+      }
 
-      });
-
-  }
-
-  verCliente(cliente: any) {
-
-    this.clienteSeleccionado = cliente;
-
-    /*
-    Si posteriormente deseas traer el detalle desde AWS:
-
-    this.cli.obtener_vista_cliente(cliente.codigo)
-      .subscribe((rest: any) => {
-        this.clienteSeleccionado = rest.data[0];
-      });
-    */
+    });
 
   }
 
-  eliminarCliente(codigo: string) {
+  guardarCliente() {
 
-    const confirmar = confirm(
-      '¿Desea eliminar este cliente?'
-    );
+    if (
+      !this.nuevoCliente.codigo ||
+      !this.nuevoCliente.nombre ||
+      !this.nuevoCliente.email
+    ) {
+
+      alert(
+        'Complete los campos obligatorios.'
+      );
+
+      return;
+
+    }
+
+    this.cli.crear_clientes(
+      this.nuevoCliente
+    )
+    .subscribe({
+
+      next: (rest: any) => {
+
+        console.log(
+          'Cliente creado:',
+          rest
+        );
+
+        alert(
+          'Cliente registrado correctamente.'
+        );
+
+        this._mostrar_lista_clientes();
+
+        this._mostrar_totales_clientes();
+
+        this.nuevoCliente = {
+          codigo: '',
+          nombre: '',
+          dni: '',
+          email: '',
+          telefono: '',
+          empresa: '',
+          ciudad: '',
+          estado: 'Activo'
+        };
+
+        this.mostrarNuevoCliente =
+          false;
+
+      },
+
+      error: (err) => {
+
+        console.error(err);
+
+        alert(
+          'Error al registrar el cliente.'
+        );
+
+      }
+
+    });
+
+  }
+
+  eliminarCliente(
+    codigo: string
+  ) {
+
+    const confirmar =
+      confirm(
+        '¿Desea eliminar este cliente?'
+      );
 
     if (!confirmar) {
       return;
     }
 
-    this.cli.eliminar_clientes(codigo)
-      .subscribe({
+    this.cli.eliminar_clientes(
+      codigo
+    )
+    .subscribe({
 
-        next: (rest: any) => {
+      next: (rest: any) => {
 
-          console.log('Cliente eliminado:', rest);
+        console.log(
+          'Cliente eliminado:',
+          rest
+        );
 
-          alert('Cliente eliminado correctamente.');
+        alert(
+          'Cliente eliminado correctamente.'
+        );
 
-          // refrescar la lista desde la BD
-          this._mostrar_lista_clientes();
+        this._mostrar_lista_clientes();
 
-          // actualizar indicadores
-          this._mostrar_totales_clientes();
+        this._mostrar_totales_clientes();
 
-        },
+      },
 
-        error: (err) => {
+      error: (err) => {
 
-          console.error(err);
+        console.error(err);
 
-          alert('Error al eliminar el cliente.');
+        alert(
+          'Error al eliminar el cliente.'
+        );
 
-        }
+      }
 
-      });
+    });
 
   }
 
   exportarExcel() {
 
-    const datos = this.clientes.map(cliente => ({
+    const datos =
+      this.clientes.map(
+        cliente => ({
 
-      Codigo: cliente.codigo,
-      Nombre: cliente.nombre,
-      DNI: cliente.dni,
-      Email: cliente.email,
-      Telefono: cliente.telefono,
-      Empresa: cliente.empresa,
-      Ciudad: cliente.ciudad,
-      Estado: cliente.estado
+          Codigo:
+            cliente.codigo,
 
-    }));
+          Nombre:
+            cliente.nombre,
+
+          DNI:
+            cliente.dni,
+
+          Email:
+            cliente.email,
+
+          Telefono:
+            cliente.telefono,
+
+          Empresa:
+            cliente.empresa,
+
+          Ciudad:
+            cliente.ciudad,
+
+          Estado:
+            cliente.estado
+
+        })
+      );
 
     const hoja =
-      XLSX.utils.json_to_sheet(datos);
+      XLSX.utils.json_to_sheet(
+        datos
+      );
 
     const libro =
       XLSX.utils.book_new();

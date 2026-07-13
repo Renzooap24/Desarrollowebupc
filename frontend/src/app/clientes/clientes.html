@@ -1,92 +1,133 @@
 <div class="container mt-4">
+
+  <!-- Breadcrumb -->
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-            <a routerLink="/dashboard">
-            Volver a la Página Principal
-            </a>
-        </li>
-        <li class="breadcrumb-item active" aria-current="page">Clientes</li>
+      <li class="breadcrumb-item">
+        <a routerLink="/dashboard">
+          Volver a la Página Principal
+        </a>
+      </li>
+      <li class="breadcrumb-item active">
+        Clientes
+      </li>
     </ol>
   </nav>
+
   <h2>Clientes</h2>
-  <p class="text-muted">Administración de clientes</p>
-  <div class="row mb-3">
+  <p class="text-muted">
+    Administración de clientes
+  </p>
+
+  <!-- Busqueda y botones -->
+  <div class="row mb-4">
+
     <div class="col-md-8">
       <input
         type="text"
         class="form-control"
         [(ngModel)]="filtro"
-        placeholder="Buscar clientes por nombre, código, email, empresa o teléfono...">
+        placeholder="Buscar clientes por nombre, código, email, empresa o teléfono">
     </div>
+
     <div class="col-md-2">
       <button
         class="btn btn-dark w-100"
         (click)="mostrarNuevoCliente = true">
-          + Nuevo Cliente
+        + Nuevo Cliente
       </button>
     </div>
+
     <div class="col-md-2">
       <button
         class="btn btn-outline-secondary w-100"
         (click)="exportarExcel()">
-          Exportar
+        Exportar
       </button>
     </div>
+
   </div>
+
+  <!-- Totales -->
   <div class="row mb-4">
+
     <div class="col-md-3">
       <div class="card shadow-sm">
-        <div class="card-body d-flex align-items-center">
-          <i class="fas fa-users text-primary me-3"
-            style="font-size: 2.5rem;"></i>
-          <div>
-            <h6>Total Clientes</h6>
-            <h3>{{ totalesClientes().totalclientes }}</h3>
-          </div>
+        <div class="card-body text-center">
+          <i
+            class="fas fa-users text-primary mb-2"
+            style="font-size:2rem">
+          </i>
+
+          <h6>Total Clientes</h6>
+
+          <h3>
+            {{ totalesClientes().totalclientes }}
+          </h3>
         </div>
       </div>
     </div>
+
     <div class="col-md-3">
       <div class="card shadow-sm">
-        <div class="card-body d-flex align-items-center">
-          <i class="fas fa-user-check text-success me-3"
-            style="font-size: 2.5rem;"></i>
-          <div>
-            <h6>Clientes Activos</h6>
-            <h3>{{ totalesClientes().totalactivos }}</h3>
-          </div>
+        <div class="card-body text-center">
+          <i
+            class="fas fa-user-check text-success mb-2"
+            style="font-size:2rem">
+          </i>
+
+          <h6>Clientes Activos</h6>
+
+          <h3>
+            {{ totalesClientes().totalactivos }}
+          </h3>
         </div>
       </div>
     </div>
+
     <div class="col-md-3">
       <div class="card shadow-sm">
-        <div class="card-body d-flex align-items-center">
-          <i class="fas fa-building text-purple me-3"
-            style="font-size: 2.5rem;"></i>
-          <div>
-            <h6>Con Empresa</h6>
-            <h3>{{ totalesClientes().totalempresa }}</h3>
-          </div>
+        <div class="card-body text-center">
+          <i
+            class="fas fa-building text-warning mb-2"
+            style="font-size:2rem">
+          </i>
+
+          <h6>Con Empresa</h6>
+
+          <h3>
+            {{ totalesClientes().totalempresa }}
+          </h3>
         </div>
       </div>
     </div>
+
     <div class="col-md-3">
       <div class="card shadow-sm">
-        <div class="card-body d-flex align-items-center">
-          <i class="fas fa-user-plus text-warning me-3"
-            style="font-size: 2.5rem;"></i>
-          <div>
-            <h6>Nuevos (Este Mes)</h6>
-            <h3>{{ totalesClientes().totalnuevos }}</h3>
-          </div>
+        <div class="card-body text-center">
+          <i
+            class="fas fa-user-plus text-danger mb-2"
+            style="font-size:2rem">
+          </i>
+
+          <h6>Nuevos</h6>
+
+          <h3>
+            {{ totalesClientes().totalnuevos }}
+          </h3>
         </div>
       </div>
     </div>
+
   </div>
+
+  <!-- Tabla -->
   <div class="card shadow-sm">
+
     <div class="card-body">
-      <table class="table table-hover">
+
+      <table class="table table-hover align-middle">
+
         <thead>
           <tr>
             <th>Código</th>
@@ -100,8 +141,11 @@
             <th>Acciones</th>
           </tr>
         </thead>
+
         <tbody>
+
           <tr *ngFor="let cliente of clientesFiltrados">
+
             <td>{{ cliente.codigo }}</td>
             <td>{{ cliente.nombre }}</td>
             <td>{{ cliente.dni }}</td>
@@ -109,233 +153,195 @@
             <td>{{ cliente.telefono }}</td>
             <td>{{ cliente.empresa }}</td>
             <td>{{ cliente.ciudad }}</td>
+
             <td>
               <span
                 class="badge"
                 [ngClass]="{
-                  'bg-success': cliente.estado === 'Activo',
-                  'bg-danger': cliente.estado === 'Inactivo'
+                  'bg-success': cliente.estado == 'Activo',
+                  'bg-danger': cliente.estado == 'Inactivo'
                 }">
+
                 {{ cliente.estado }}
+
               </span>
             </td>
+
             <td>
-            <button
-              class="btn btn-sm btn-outline-primary me-1"
-              (click)="verCliente(cliente)">
+
+              <button
+                class="btn btn-sm btn-outline-primary me-1"
+                (click)="verCliente(cliente)">
                 <i class="fas fa-eye"></i>
               </button>
+
               <button
                 class="btn btn-sm btn-outline-warning me-1"
-                (click)="editarCliente(cliente)">              
+                (click)="editarCliente(cliente)">
                 <i class="fas fa-edit"></i>
               </button>
+
               <button
                 class="btn btn-sm btn-outline-danger"
-                (click)="eliminarCliente(cliente.codigo)">              
+                (click)="eliminarCliente(cliente.codigo)">
                 <i class="fas fa-trash"></i>
               </button>
+
             </td>
+
           </tr>
+
         </tbody>
+
       </table>
+
     </div>
+
   </div>
-  <div *ngIf="clienteSeleccionado" class="modal-backdrop-custom">
-    <div class="modal-custom">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4>
-          Detalle del Cliente
-        </h4>
-        <button
+
+</div>
+
+<!-- Modal Ver -->
+<div *ngIf="clienteSeleccionado" class="modal-backdrop-custom">
+
+  <div class="modal-custom">
+
+    <div class="d-flex justify-content-between mb-3">
+      <h4>Detalle Cliente</h4>
+
+      <button
         class="btn btn-danger"
         (click)="clienteSeleccionado = null">
-          X
-        </button>
-      </div>
-      <table class="table">
-        <tr>
-          <th>Código</th>
-          <td>{{ clienteSeleccionado.codigo }}</td>
-        </tr>
-        <tr>
-          <th>Nombre</th>
-          <td>{{ clienteSeleccionado.nombre }}</td>
-        </tr>
-        <tr>
-          <th>DNI</th>
-          <td>{{ clienteSeleccionado.dni }}</td>
-        </tr>
-        <tr>
-          <th>Email</th>
-          <td>{{ clienteSeleccionado.email }}</td>
-        </tr>
-        <tr>
-          <th>Teléfono</th>
-          <td>{{ clienteSeleccionado.telefono }}</td>
-        </tr>
-        <tr>
-          <th>Empresa</th>
-          <td>{{ clienteSeleccionado.empresa }}</td>
-        </tr>
-        <tr>
-          <th>Ciudad</th>
-          <td>{{ clienteSeleccionado.ciudad }}</td>
-        </tr>
-        <tr>
-          <th>Estado</th>
-          <td>{{ clienteSeleccionado.estado }}</td>
-        </tr>
-      </table>
-    </div>
-  </div>
-  <div *ngIf="mostrarEditarCliente" class="modal-backdrop-custom">
-    <div class="modal-custom">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4>
-          Editar Cliente
-        </h4>
-        <button
-        class="btn btn-danger"
-        (click)="mostrarEditarCliente = false">
-          X
-        </button>
-      </div>
-      <div class="mb-2">
-        <label>Código</label>
-        <input
-          class="form-control"
-          [(ngModel)]="clienteEditando.codigo"
-          readonly>
-      </div>
-      <div class="mb-2">
-        <label>Nombre</label>
-        <input
-          class="form-control"
-          [(ngModel)]="clienteEditando.nombre">
-      </div>
-      <div class="mb-2">
-        <label>DNI</label>
-        <input
-          class="form-control"
-          [(ngModel)]="clienteEditando.dni">
-      </div>
-      <div class="mb-2">
-        <label>Email</label>
-        <input
-          class="form-control"
-          [(ngModel)]="clienteEditando.email">
-      </div>
-      <div class="mb-2">
-        <label>Teléfono</label>
-        <input
-          class="form-control"
-          [(ngModel)]="clienteEditando.telefono">
-      </div>
-      <div class="mb-2">
-        <label>Empresa</label>
-        <input
-          class="form-control"
-          [(ngModel)]="clienteEditando.empresa">
-      </div>
-      <div class="mb-2">
-        <label>Ciudad</label>
-        <input
-          class="form-control"
-          [(ngModel)]="clienteEditando.ciudad">
-      </div>
-      <div class="mb-3">
-        <label>Estado</label>
-        <select
-          class="form-select"
-          [(ngModel)]="clienteEditando.estado">
-          <option value="Activo">
-            Activo
-          </option>
-          <option value="Inactivo">
-            Inactivo
-          </option>
-        </select>
-      </div>
-      <button
-        class="btn btn-primary w-100"
-        (click)="guardarEdicion()">
-        Guardar Cambios
+        X
       </button>
     </div>
+
+    <table class="table">
+
+      <tr>
+        <th>Código</th>
+        <td>{{ clienteSeleccionado.codigo }}</td>
+      </tr>
+
+      <tr>
+        <th>Nombre</th>
+        <td>{{ clienteSeleccionado.nombre }}</td>
+      </tr>
+
+      <tr>
+        <th>DNI</th>
+        <td>{{ clienteSeleccionado.dni }}</td>
+      </tr>
+
+      <tr>
+        <th>Email</th>
+        <td>{{ clienteSeleccionado.email }}</td>
+      </tr>
+
+      <tr>
+        <th>Teléfono</th>
+        <td>{{ clienteSeleccionado.telefono }}</td>
+      </tr>
+
+      <tr>
+        <th>Empresa</th>
+        <td>{{ clienteSeleccionado.empresa }}</td>
+      </tr>
+
+      <tr>
+        <th>Ciudad</th>
+        <td>{{ clienteSeleccionado.ciudad }}</td>
+      </tr>
+
+      <tr>
+        <th>Estado</th>
+        <td>{{ clienteSeleccionado.estado }}</td>
+      </tr>
+
+    </table>
+
   </div>
-  <div *ngIf="mostrarNuevoCliente" class="modal-backdrop-custom">
-    <div class="modal-custom">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4>
-          Nuevo Cliente
-        </h4>
-        <button
-        class="btn btn-danger"
-        (click)="mostrarNuevoCliente = false">
-          X
-        </button>
-      </div>
-      <div class="mb-2">
-        <label>Código</label>
-        <input
-          class="form-control"
-          [(ngModel)]="nuevoCliente.codigo">
-      </div>
-      <div class="mb-2">
-        <label>Nombre</label>
-        <input
-          class="form-control"
-          [(ngModel)]="nuevoCliente.nombre">
-      </div>
-      <div class="mb-2">
-        <label>DNI</label>
-        <input
-          class="form-control"
-          [(ngModel)]="nuevoCliente.dni">
-      </div>
-      <div class="mb-2">
-        <label>Email</label>
-        <input
-          class="form-control"
-          [(ngModel)]="nuevoCliente.email">
-      </div>
-      <div class="mb-2">
-        <label>Teléfono</label>
-        <input
-          class="form-control"
-          [(ngModel)]="nuevoCliente.telefono">
-      </div>
-      <div class="mb-2">
-        <label>Empresa</label>
-        <input
-          class="form-control"
-          [(ngModel)]="nuevoCliente.empresa">
-      </div>
-      <div class="mb-2">
-        <label>Ciudad</label>
-        <input
-          class="form-control"
-          [(ngModel)]="nuevoCliente.ciudad">
-      </div>
-      <div class="mb-3">
-        <label>Estado</label>
-        <select
-          class="form-select"
-          [(ngModel)]="nuevoCliente.estado">
-          <option value="Activo">
-            Activo
-          </option>
-          <option value="Inactivo">
-            Inactivo
-          </option>
-        </select>
-      </div>
-      <button
-        class="btn btn-success w-100"
-        (click)="guardarCliente()">
-        Guardar Cliente
-      </button>
-    </div>
+
+</div>
+
+<!-- Modal Editar -->
+<div *ngIf="mostrarEditarCliente" class="modal-backdrop-custom">
+
+  <div class="modal-custom">
+
+    <h4 class="mb-3">
+      Editar Cliente
+    </h4>
+
+    <input class="form-control mb-2" [(ngModel)]="clienteEditando.codigo" readonly>
+    <input class="form-control mb-2" [(ngModel)]="clienteEditando.nombre" placeholder="Nombre">
+    <input class="form-control mb-2" [(ngModel)]="clienteEditando.dni" placeholder="DNI">
+    <input class="form-control mb-2" [(ngModel)]="clienteEditando.email" placeholder="Email">
+    <input class="form-control mb-2" [(ngModel)]="clienteEditando.telefono" placeholder="Teléfono">
+    <input class="form-control mb-2" [(ngModel)]="clienteEditando.empresa" placeholder="Empresa">
+    <input class="form-control mb-2" [(ngModel)]="clienteEditando.ciudad" placeholder="Ciudad">
+
+    <select
+      class="form-select mb-3"
+      [(ngModel)]="clienteEditando.estado">
+
+      <option value="Activo">
+        Activo
+      </option>
+
+      <option value="Inactivo">
+        Inactivo
+      </option>
+
+    </select>
+
+    <button
+      class="btn btn-primary w-100"
+      (click)="guardarEdicion()">
+      Guardar Cambios
+    </button>
+
   </div>
+
+</div>
+
+<!-- Modal Nuevo -->
+<div *ngIf="mostrarNuevoCliente" class="modal-backdrop-custom">
+
+  <div class="modal-custom">
+
+    <h4 class="mb-3">
+      Nuevo Cliente
+    </h4>
+
+    <input class="form-control mb-2" [(ngModel)]="nuevoCliente.codigo" placeholder="Código">
+    <input class="form-control mb-2" [(ngModel)]="nuevoCliente.nombre" placeholder="Nombre">
+    <input class="form-control mb-2" [(ngModel)]="nuevoCliente.dni" placeholder="DNI">
+    <input class="form-control mb-2" [(ngModel)]="nuevoCliente.email" placeholder="Email">
+    <input class="form-control mb-2" [(ngModel)]="nuevoCliente.telefono" placeholder="Teléfono">
+    <input class="form-control mb-2" [(ngModel)]="nuevoCliente.empresa" placeholder="Empresa">
+    <input class="form-control mb-2" [(ngModel)]="nuevoCliente.ciudad" placeholder="Ciudad">
+
+    <select
+      class="form-select mb-3"
+      [(ngModel)]="nuevoCliente.estado">
+
+      <option value="Activo">
+        Activo
+      </option>
+
+      <option value="Inactivo">
+        Inactivo
+      </option>
+
+    </select>
+
+    <button
+      class="btn btn-success w-100"
+      (click)="guardarCliente()">
+      Guardar Cliente
+    </button>
+
+  </div>
+
 </div>

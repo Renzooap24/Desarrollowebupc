@@ -5,7 +5,7 @@ import { Maquinas } from './maquinas.model';
 export class MaquinasService {
   private key = 'maquinas';
 
-  getMaqinas(): Maquinas[] {
+  getMaquinas(): Maquinas[] {
     const data = localStorage.getItem(this.key);
     return data ? JSON.parse(data) : [
       { codigo:"MAQ-001", nombre:"Compresor Atlas Copco GA22", estado:"Operativa" },

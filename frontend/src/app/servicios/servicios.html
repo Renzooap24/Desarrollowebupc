@@ -2,9 +2,7 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item">
-                <a routerLink="/dashboard">
-                Volver a la Página Principal
-                </a>
+                <a routerLink="/dashboard">Volver a la Página Principal</a>
             </li>
             <li class="breadcrumb-item active" aria-current="page">Servicios</li>
         </ol>
@@ -21,37 +19,70 @@
             </div>
         </div>
         <button class="btn btn-outline-secondary me-2"><i class="fas fa-filter"></i> Todos los Tipos</button>
-        <button class="btn btn-primary me-2"><i class="fas fa-file-invoice"></i> Cotizaciones</button>
-        <button class="btn btn-outline-dark"><i class="fas fa-download"></i> Exportar</button>
+        <button class="btn btn-primary me-2" routerLink="/cotizaciones">
+    <i class="fas fa-file-invoice"></i> Cotizaciones</button>
+        <button class="btn btn-outline-dark" (click)="exportarExcel()"><i class="fas fa-download"></i> Exportar</button>
     </div>
 
     <section class="row g-3 mb-4">
-        <div class="col-md-3"><div class="bg-white summary-card d-flex align-items-center"><i class="fas fa-wrench text-primary me-3" style="font-size: 2rem;"></i><div><p class="mb-0 text-muted">Total Servicios</p><h4 class="mb-0 fw-bold">{{servicios.length}}</h4></div></div></div>
-        <div class="col-md-3"><div class="bg-white summary-card d-flex align-items-center"><i class="fas fa-check-circle text-success me-3" style="font-size: 2rem;"></i><div><p class="mb-0 text-muted">Garantías</p><h4 class="mb-0 fw-bold">1</h4></div></div></div>
-        <div class="col-md-3"><div class="bg-white summary-card d-flex align-items-center"><i class="fas fa-cog text-warning me-3" style="font-size: 2rem;"></i><div><p class="mb-0 text-muted">Preventivos</p><h4 class="mb-0 fw-bold">3</h4></div></div></div>
-        <div class="col-md-3"><div class="bg-white summary-card d-flex align-items-center"><i class="fas fa-exclamation-triangle text-danger me-3" style="font-size: 2rem;"></i><div><p class="mb-0 text-muted">Correctivos</p><h4 class="mb-0 fw-bold">2</h4></div></div></div>
+        <div class="col-md-3"><div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded"><i class="fas fa-wrench text-primary me-3" style="font-size: 2rem;"></i><div><p class="mb-0 text-muted small">Total Servicios</p><h4 class="mb-0 fw-bold">{{servicios.length}}</h4></div></div></div>
+        <div class="col-md-3"><div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded"><i class="fas fa-check-circle text-success me-3" style="font-size: 2rem;"></i><div><p class="mb-0 text-muted small">Garantías</p><h4 class="mb-0 fw-bold">1</h4></div></div></div>
+        <div class="col-md-3"><div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded"><i class="fas fa-cog text-warning me-3" style="font-size: 2rem;"></i><div><p class="mb-0 text-muted small">Preventivos</p><h4 class="mb-0 fw-bold">3</h4></div></div></div>
+        <div class="col-md-3"><div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded"><i class="fas fa-exclamation-triangle text-danger me-3" style="font-size: 2rem;"></i><div><p class="mb-0 text-muted small">Correctivos</p><h4 class="mb-0 fw-bold">2</h4></div></div></div>
     </section>
 
-    <section class="table-container">
-        <h5 class="mb-4">Historial de Servicios</h5>
-        <table class="table table-hover table-striped">
-            <thead>
-                <tr>
-                    <th>Fecha</th> <th>Tipo de Servicio</th> <th>Cliente</th> <th>Máquina</th> <th>Productos</th> <th>Motivo</th> <th>Ref.</th> <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let s of serviciosFiltrados; let i = index">
-                    <td>{{ s.fecha }}</td>
-                    <td><span class="badge bg-primary">{{ s.tipo }}</span></td>
-                    <td>{{ s.cliente }}</td>
-                    <td>{{ s.maquina }}</td>
-                    <td>{{ s.productos }}</td>
-                    <td>{{ s.motivo }}</td>
-                    <td>{{ s.ref }}</td>
-                    <td><button class="btn btn-sm btn-info" (click)="verDetalle(i)">Ver</button></td>
-                </tr>
-            </tbody>
-        </table>
+    <section class="table-container bg-white shadow-sm p-4 rounded">
+        <h5 class="mb-4 fw-bold">Historial de Servicios</h5>
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Fecha</th> <th>Tipo</th> <th>Cliente</th> <th>Máquina</th> <th>Motivo</th> <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let s of serviciosFiltrados; let i = index">
+                        <td>{{ s.fecha }}</td>
+                        <td><span class="badge bg-primary">{{ s.tipo }}</span></td>
+                        <td>{{ s.cliente }}</td>
+                        <td>{{ s.maquina }}</td>
+                        <td>{{ s.motivo }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-info text-white" (click)="verDetalle(i)">
+                                <i class="fas fa-eye"></i> Ver
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </section>
 </main>
+
+<div *ngIf="mostrarDetalle" class="modal-backdrop-custom">
+    <div class="modal-custom">
+        <div class="modal-header d-flex justify-content-between align-items-center p-3 border-bottom">
+            <h5 class="m-0 fw-bold">Detalle del Servicio</h5>
+            <button class="btn btn-danger btn-sm" (click)="cerrarDetalle()">X</button>
+        </div>
+        
+        <div class="modal-body p-4">
+            <div class="mb-3">
+                <p class="text-muted mb-1 small">Cliente:</p>
+                <h6 class="fw-bold">{{ servicioSeleccionado?.cliente }}</h6>
+            </div>
+            <div class="mb-3">
+                <p class="text-muted mb-1 small">Máquina:</p>
+                <h6 class="fw-bold">{{ servicioSeleccionado?.maquina }}</h6>
+            </div>
+            <div class="mb-3">
+                <p class="text-muted mb-1 small">Motivo:</p>
+                <h6 class="fw-bold">{{ servicioSeleccionado?.motivo }}</h6>
+            </div>
+            <div class="mb-3">
+                <p class="text-muted mb-1 small">Productos:</p>
+                <h6 class="fw-bold">{{ servicioSeleccionado?.productos }}</h6>
+            </div>
+        </div>
+    </div>
+</div>

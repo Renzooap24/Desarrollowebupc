@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import * as XLSX from 'xlsx';
-import { Modal } from 'bootstrap';
+import { HttpClient } from '@angular/common/http';
+import { StorageService } from '../core/services/storage.service';
+import { ExportService } from '../core/services/export.service';
 
 interface Producto { 
+  id?: number;
   codigo: string; 
   nombre: string; 
   ubicacion: string; 
@@ -33,11 +35,17 @@ interface HistorialPrecio {
   styleUrls: ['./inventario.css']
 })
 export class Inventario implements OnInit {
+  mostrarModalProducto = false;
+  mostrarModalVer = false;
+  mostrarModalHistorial = false;
+  mostrarModalCambioPrecio = false;
+
   productos: Producto[] = [];
+  listaFiltrada: Producto[] = []; 
   historialPrecios: HistorialPrecio[] = [];
   terminoBusqueda: string = '';
 
-  productoActual: Producto = this.productoVacio();
+  productoActual!: Producto;
   historialActual: HistorialItem[] = [];
   productoSeleccionadoParaPrecio: string = '';
   nuevoPrecio: number = 0;
@@ -45,68 +53,72 @@ export class Inventario implements OnInit {
   esEdicion: boolean = false;
   indiceEdicion: number = -1;
 
+  constructor(
+    private storageService: StorageService,
+    private exportService: ExportService,
+    private http: HttpClient
+  ) {}
+
   ngOnInit() {
+    this.productoActual = this.productoVacio();
     this.cargarDatos();
   }
 
   cargarDatos() {
-    const prodStorage = localStorage.getItem("productos");
-    const histStorage = localStorage.getItem("historialPrecios");
-
-    if (prodStorage) {
-      this.productos = JSON.parse(prodStorage);
-    } else {
-      this.productos = [
-        { codigo: "PROD-001", nombre: "Producto A", ubicacion: "B1", stock: 50, precio: 25.50, estado: "Disponible" },
-        { codigo: "PROD-002", nombre: "Producto B", ubicacion: "C2", stock: 30, precio: 18.75, estado: "Bajo Stock" }
-      ];
+    const prodStorage = this.storageService.get("productos");
+    if (prodStorage && prodStorage.length > 0) {
+      this.productos = prodStorage;
+      this.listaFiltrada = [...this.productos];
     }
 
-    if (histStorage) {
-      this.historialPrecios = JSON.parse(histStorage);
-    } else {
-      this.historialPrecios = [
-        { codigo: "PROD-001", historial: [ { fecha: "2024-01-15", precio: 20.00, motivo: "Precio inicial" } ]},
-        { codigo: "PROD-002", historial: [ { fecha: "2024-01-10", precio: 15.00, motivo: "Precio inicial" } ]}
-      ];
-    }
-    this.guardarDatos();
+    const apiUrl = 'https://g96duk1lm4.execute-api.us-east-1.amazonaws.com/v1/desarrollo_upc';
+    this.http.get<any>(apiUrl).subscribe({
+      next: (response) => {
+        let productosApi: Producto[] = [];
+        
+        if (response.body && typeof response.body === 'string') {
+          const bodyParsed = JSON.parse(response.body);
+          productosApi = bodyParsed.data || [];
+        } else if (response.data) {
+          productosApi = response.data;
+        }
+
+        this.productos = productosApi;
+        this.guardarDatos();
+        
+        this.filtrarProductos(); 
+      },
+      error: (err) => {
+        console.error('Pucha, falló la API:', err);
+        
+        this.filtrarProductos();
+      }
+    });
+
+    // Cargar historial
+    const histStorage = this.storageService.get("historialPrecios");
+    this.historialPrecios = histStorage || [];
   }
 
-  get productosFiltrados() {
-    if (!this.terminoBusqueda) return this.productos;
+  
+  filtrarProductos() {
+    if (!this.terminoBusqueda) {
+      this.listaFiltrada = [...this.productos];
+      return;
+    }
     const q = this.terminoBusqueda.toLowerCase();
-    return this.productos.filter(p => 
-      p.nombre.toLowerCase().includes(q) || 
-      p.codigo.toLowerCase().includes(q)
+    this.listaFiltrada = this.productos.filter(p => 
+      p.nombre.toLowerCase().includes(q) || p.codigo.toLowerCase().includes(q)
     );
   }
 
-  get totalProductos() { 
-    return this.productos.length; 
-  }
-  
-  get productosDisponibles() { 
-    return this.productos.filter(p => p.estado === 'Disponible').length; 
-  }
-  
-  get productosEnTransito() { 
-    return this.productos.filter(p => p.estado === 'En Tránsito').length; 
-  }
-  
-  get productosBajoStock() { 
-    return this.productos.filter(p => p.estado === 'Bajo Stock').length; 
-  }
+  get totalProductos() { return this.productos.length; }
+  get productosDisponibles() { return this.productos.filter(p => p.estado === 'Disponible').length; }
+  get productosEnTransito() { return this.productos.filter(p => p.estado === 'En Tránsito').length; }
+  get productosBajoStock() { return this.productos.filter(p => p.estado === 'Bajo Stock').length; }
 
   productoVacio(): Producto {
-    return { 
-      codigo: '', 
-      nombre: '', 
-      ubicacion: '', 
-      stock: 0, 
-      precio: 0, 
-      estado: 'Disponible' 
-    };
+    return { codigo: '', nombre: '', ubicacion: '', stock: 0, precio: 0, estado: 'Disponible' };
   }
 
   abrirModalNuevo() {
@@ -114,21 +126,9 @@ export class Inventario implements OnInit {
     this.productoActual = this.productoVacio();
   }
 
-  abrirModal(id: string) {
-    setTimeout(() => {
-      const modalElement = document.getElementById(id);
-      if (modalElement) {
-        const modalInstance = new Modal(modalElement);
-        modalInstance.show();
-      } else {
-        console.error('No se encontró el modal con id:', id);
-      }
-    }, 100);
-  }
-
   abrirModalEditar(index: number, producto: Producto) {
     this.esEdicion = true;
-    this.indiceEdicion = index;
+    this.indiceEdicion = this.productos.findIndex(p => p.codigo === producto.codigo);
     this.productoActual = { ...producto };
   }
 
@@ -137,136 +137,74 @@ export class Inventario implements OnInit {
   }
 
   guardarProducto() {
-    if (!this.productoActual.codigo || !this.productoActual.nombre || !this.productoActual.ubicacion) {
-      alert("Completa los campos obligatorios.");
-      return;
-    }
-
     if (this.esEdicion) {
       this.productos[this.indiceEdicion] = { ...this.productoActual };
     } else {
-      // Verificar si el código ya existe
-      const existeCodigo = this.productos.some(p => p.codigo === this.productoActual.codigo);
-      if (existeCodigo) {
-        alert("El código de producto ya existe.");
-        return;
-      }
       this.productos.push({ ...this.productoActual });
     }
-
     this.guardarDatos();
-    this.cerrarModal('modalFormProducto');
+    this.filtrarProductos(); 
+    this.mostrarModalProducto = false;
   }
 
   eliminarProducto(index: number, nombre: string) {
-    if (confirm(`¿Estás seguro de eliminar el producto "${nombre}"?`)) {
-      this.productos.splice(index, 1);
-      this.guardarDatos();
+    if (confirm(`¿Estás seguro de eliminar "${nombre}"?`)) {
+      
+      const productoAEliminar = this.listaFiltrada[index];
+      const indiceReal = this.productos.findIndex(p => p.codigo === productoAEliminar.codigo);
+      
+      if (indiceReal > -1) {
+        this.productos.splice(indiceReal, 1);
+        this.guardarDatos();
+        this.filtrarProductos(); 
+      }
     }
   }
 
   abrirHistorial(codigo: string) {
+    this.productoSeleccionadoParaPrecio = codigo;
     const historial = this.historialPrecios.find(h => h.codigo === codigo);
     this.historialActual = historial ? [...historial.historial] : [];
-    this.productoSeleccionadoParaPrecio = codigo;
-    
     const prod = this.productos.find(p => p.codigo === codigo);
-    if (prod) {
-      this.productoActual = { ...prod };
-    }
+    if (prod) this.productoActual = { ...prod };
   }
 
   abrirCambioPrecio() {
-    this.nuevoPrecio = 0;
+    this.nuevoPrecio = this.productoActual.precio;
     this.motivoCambio = '';
   }
 
   guardarNuevoPrecio() {
-    if (this.nuevoPrecio < 0 || !this.motivoCambio) {
-      alert("Ingresa un precio válido y un motivo.");
-      return;
-    }
-
-    // Actualizar precio del producto
     const prodIndex = this.productos.findIndex(p => p.codigo === this.productoSeleccionadoParaPrecio);
-    if (prodIndex > -1) {
-      this.productos[prodIndex].precio = this.nuevoPrecio;
-    }
+    if (prodIndex > -1) this.productos[prodIndex].precio = this.nuevoPrecio;
 
-    // Actualizar o crear historial
     let histObj = this.historialPrecios.find(h => h.codigo === this.productoSeleccionadoParaPrecio);
     if (!histObj) {
-      histObj = { 
-        codigo: this.productoSeleccionadoParaPrecio, 
-        historial: [] 
-      };
+      histObj = { codigo: this.productoSeleccionadoParaPrecio, historial: [] };
       this.historialPrecios.push(histObj);
     }
+    histObj.historial.unshift({ fecha: new Date().toISOString().split('T')[0], precio: this.nuevoPrecio, motivo: this.motivoCambio });
     
-    // Agregar nuevo registro al historial
-    const nuevoRegistro: HistorialItem = {
-      fecha: new Date().toISOString().split('T')[0],
-      precio: this.nuevoPrecio,
-      motivo: this.motivoCambio
-    };
-    
-    histObj.historial.unshift(nuevoRegistro);
-
-    // Actualizar también el historial que se muestra
-    this.historialActual = [...histObj.historial];
-
     this.guardarDatos();
-    this.cerrarModal('modalCambiarPrecio');
-    
-    // Actualizar el modal de historial si está abierto
-    setTimeout(() => {
-      const modalElement = document.getElementById('modalHistorialPrecios');
-      if (modalElement && modalElement.classList.contains('show')) {
-        // Forzar actualización de la vista
-        this.historialActual = [...histObj!.historial];
-      }
-    }, 200);
+    this.filtrarProductos(); 
+    this.mostrarModalCambioPrecio = false;
+    this.mostrarModalHistorial = false;
   }
 
   guardarDatos() {
-    // Actualizar estados automáticamente
     this.productos.forEach(p => {
-      if (p.stock <= 10 && p.stock > 0 && p.estado !== 'En Tránsito') {
-        p.estado = 'Bajo Stock';
-      } else if (p.stock > 10 && p.estado === 'Bajo Stock') {
-        p.estado = 'Disponible';
-      } else if (p.stock === 0) {
-        p.estado = 'Agotado';
-      }
+      if (p.stock <= 10 && p.stock > 0 && p.estado !== 'En Tránsito') p.estado = 'Bajo Stock';
+      else if (p.stock > 10 && p.estado === 'Bajo Stock') p.estado = 'Disponible';
+      else if (p.stock === 0) p.estado = 'Agotado';
     });
-    
-    localStorage.setItem("productos", JSON.stringify(this.productos));
-    localStorage.setItem("historialPrecios", JSON.stringify(this.historialPrecios));
+    this.storageService.save("productos", this.productos);
+    this.storageService.save("historialPrecios", this.historialPrecios);
   }
 
   exportarExcel() {
     const datosExportar = this.productos.map(p => ({
-      'Código': p.codigo,
-      'Nombre': p.nombre,
-      'Ubicación': p.ubicacion,
-      'Stock': p.stock,
-      'Precio': p.precio,
-      'Estado': p.estado
+      'Código': p.codigo, 'Nombre': p.nombre, 'Ubicación': p.ubicacion, 'Stock': p.stock, 'Precio': p.precio, 'Estado': p.estado
     }));
-    
-    const hoja = XLSX.utils.json_to_sheet(datosExportar);
-    const libro = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(libro, hoja, "Inventario");
-    XLSX.writeFile(libro, `inventario_${new Date().toISOString().split('T')[0]}.xlsx`);
-  }
-
-  cerrarModal(id: string) {
-    const modalElement = document.getElementById(id);
-    if (modalElement) {
-      const modalInstance = Modal.getInstance(modalElement);
-      if (modalInstance) {
-        modalInstance.hide();
-      }
-    }
+    this.exportService.exportToExcel(datosExportar, `inventario_${new Date().toISOString().split('T')[0]}`, "Inventario");
   }
 }

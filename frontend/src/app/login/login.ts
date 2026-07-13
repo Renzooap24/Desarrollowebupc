@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
@@ -12,14 +13,32 @@ import { Router } from '@angular/router';
 export class Login {
   email = '';
   password = '';
-
-  constructor(private router: Router) {}
+  
+  private router = inject(Router);
+  private http = inject(HttpClient); 
 
   iniciarSesion() {
-    if (this.email === 'admin' && this.password === '12345678') {
-      this.router.navigate(['/dashboard']);
+    const body = { 
+        email: this.email, 
+        password: this.password 
+    };
+
+    const url = 'https://y8xzfn96e3.execute-api.us-east-1.amazonaws.com/prod/login';
+
+this.http.post(url, body).subscribe({
+  next: (res: any) => {
+    console.log("Respuesta del servidor:", res); 
+
+    if (res && res.status === 'success') {
+        this.router.navigate(['/dashboard']);
     } else {
-      alert('Usuario o contraseña incorrectos.');
+        alert('Credenciales incorrectas.');
     }
+  },
+  error: (err) => {
+    console.error("Error completo:", err);
+    alert('Error al conectar con el servidor.');
+  }
+});
   }
 }

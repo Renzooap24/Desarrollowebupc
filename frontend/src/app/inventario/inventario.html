@@ -1,263 +1,257 @@
 <main class="container mt-4">
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="/dashboard">Volver a la Página Principal</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Inventario</li>
-        </ol>
-    </nav>
-    
-    <h1 class="mb-2">Inventario</h1>
-    <p class="text-muted mb-4">Administración de inventario</p>
-    
-    <section class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="bg-white summary-card d-flex align-items-center">
-                <i class="fas fa-boxes text-primary me-3" style="font-size: 2rem;"></i>
-                <div>
-                    <p class="mb-0 text-muted">Total Productos</p>
-                    <h4 class="mb-0 fw-bold">{{ totalProductos }}</h4>
-                </div>
-            </div>
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/dashboard">Volver a la Página Principal</a></li>
+      <li class="breadcrumb-item active" aria-current="page">Inventario</li>
+    </ol>
+  </nav>
+  
+  <h1 class="mb-2">Inventario</h1>
+  <p class="text-muted mb-4">Administración de productos y control de stock</p>
+  
+  <section class="row g-4 mb-4">
+    <div class="col-md-3">
+      <div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded">
+        <i class="fas fa-boxes text-primary me-3" style="font-size: 2rem;"></i>
+        <div>
+          <p class="mb-0 text-muted small">Total Productos</p>
+          <h4 class="mb-0 fw-bold">{{ totalProductos }}</h4>
         </div>
-        <div class="col-md-3">
-            <div class="bg-white summary-card d-flex align-items-center">
-                <i class="fas fa-box-open text-success me-3" style="font-size: 2rem;"></i>
-                <div>
-                    <p class="mb-0 text-muted">Productos Disponibles</p>
-                    <h4 class="mb-0 fw-bold">{{ productosDisponibles }}</h4>
-                </div>
-            </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded">
+        <i class="fas fa-box-open text-success me-3" style="font-size: 2rem;"></i>
+        <div>
+          <p class="mb-0 text-muted small">Disponibles</p>
+          <h4 class="mb-0 fw-bold">{{ productosDisponibles }}</h4>
         </div>
-        <div class="col-md-3">
-            <div class="bg-white summary-card d-flex align-items-center">
-                <i class="fas fa-dolly text-purple me-3" style="font-size: 2rem;"></i>
-                <div>
-                    <p class="mb-0 text-muted">En Tránsito</p>
-                    <h4 class="mb-0 fw-bold">{{ productosEnTransito }}</h4>
-                </div>
-            </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded">
+        <i class="fas fa-dolly text-purple me-3" style="font-size: 2rem;"></i>
+        <div>
+          <p class="mb-0 text-muted small">En Tránsito</p>
+          <h4 class="mb-0 fw-bold">{{ productosEnTransito }}</h4>
         </div>
-        <div class="col-md-3">
-            <div class="bg-white summary-card d-flex align-items-center">
-                <i class="fas fa-exclamation-triangle text-warning me-3" style="font-size: 2rem;"></i>
-                <div>
-                    <p class="mb-0 text-muted">Bajo Stock</p>
-                    <h4 class="mb-0 fw-bold">{{ productosBajoStock }}</h4>
-                </div>
-            </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded">
+        <i class="fas fa-exclamation-triangle text-warning me-3" style="font-size: 2rem;"></i>
+        <div>
+          <p class="mb-0 text-muted small">Bajo Stock</p>
+          <h4 class="mb-0 fw-bold">{{ productosBajoStock }}</h4>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <section class="table-container">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h5 class="mb-0">Gestión de Inventario</h5>
-            <div>
-                <button class="btn btn-dark me-2" (click)="abrirModalNuevo(); abrirModal('modalFormProducto')">
-                    <i class="fas fa-plus me-1"></i> Nuevo Producto
-                </button>
-                <button class="btn btn-outline-secondary" (click)="exportarExcel()">
-                    <i class="fas fa-download me-1"></i> Exportar
-                </button>
-            </div>
-        </div>
-        
-        <div class="mb-3 d-flex align-items-center">
-            <input type="text" class="form-control me-2" placeholder="Buscar productos por nombre, código..." [(ngModel)]="terminoBusqueda">
-            <button class="btn btn-primary"><i class="fas fa-search"></i></button>
-        </div>
-        
-        <table class="table table-hover table-striped">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Código</th>
-                    <th>Nombre</th>
-                    <th>Ubicación</th>
-                    <th>Stock</th>
-                    <th>Precio</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let p of productosFiltrados; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ p.codigo }}</td>
-                    <td>{{ p.nombre }}</td>
-                    <td>{{ p.ubicacion || p.categoria || 'N/A' }}</td>
-                    <td>{{ p.stock }}</td>
-                    <td>
-                        <span class="precio-clickeable" 
-                              style="cursor: pointer; color: #007bff; text-decoration: underline;" 
-                              (click)="abrirHistorial(p.codigo); abrirModal('modalHistorialPrecios')" 
-                              title="Click para ver historial de precios">
-                            S/ {{ p.precio | number:'1.2-2' }}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="badge status-badge" [ngClass]="{'bg-success': p.estado === 'Disponible', 'bg-warning': p.estado === 'Bajo Stock', 'bg-secondary': p.estado === 'En Tránsito'}">
-                            {{ p.estado }}
-                        </span>
-                    </td>
-                    <td>
-                        <button class="btn btn-sm btn-info ver me-1" title="Ver Detalles" (click)="verProducto(p); abrirModal('modalVerProducto')">
-                            <i class="fas fa-eye text-white"></i>
-                        </button>
-                        <button class="btn btn-sm btn-warning editar me-1" (click)="abrirModalEditar(i, p); abrirModal('modalFormProducto')">
-                            <i class="fas fa-pencil-alt text-white"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger eliminar" title="Eliminar Producto" (click)="eliminarProducto(i, p.nombre)">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
+  <section class="table-container bg-white shadow-sm p-4 rounded">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h5 class="mb-0 fw-bold">Gestión de Inventario</h5>
+      <div>
+        <button class="btn btn-dark me-2" (click)="abrirModalNuevo(); mostrarModalProducto = true">
+          <i class="fas fa-plus me-1"></i> Nuevo Producto
+        </button>
+        <button class="btn btn-outline-secondary" (click)="exportarExcel()">
+          <i class="fas fa-download me-1"></i> Exportar
+        </button>
+      </div>
+    </div>
+    
+    <div class="mb-3 d-flex align-items-center">
+      <div class="input-group">
+        <span class="input-group-text bg-white border-end-0"><i class="fas fa-search text-muted"></i></span>
+        <input type="text" class="form-control border-start-0" 
+               placeholder="Buscar productos por nombre, código..." 
+               [(ngModel)]="terminoBusqueda"
+               (ngModelChange)="filtrarProductos()">
+      </div>
+    </div>
+    
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>#</th>
+          <th>Código</th>
+          <th>Nombre</th>
+          <th>Ubicación</th>
+          <th>Stock</th>
+          <th>Precio</th>
+          <th>Estado</th>
+          <th class="text-center">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of listaFiltrada; let i = index">
+          <td>{{ i + 1 }}</td>
+          <td class="fw-bold">{{ p.codigo }}</td>
+          <td>{{ p.nombre }}</td>
+          <td>{{ p.ubicacion || 'N/A' }}</td>
+          <td>{{ p.stock }}</td>
+          <td>
+            <span class="text-primary fw-bold" style="cursor: pointer; text-decoration: underline;" 
+                  (click)="abrirHistorial(p.codigo); mostrarModalHistorial = true">
+              S/ {{ p.precio | number:'1.2-2' }}
+            </span>
+          </td>
+          <td>
+            <span class="badge" [ngClass]="{
+              'bg-success': p.estado === 'Disponible', 
+              'bg-warning text-dark': p.estado === 'Bajo Stock', 
+              'bg-danger': p.estado === 'Agotado', 
+              'bg-secondary': p.estado === 'En Tránsito'
+            }">
+              {{ p.estado }}
+            </span>
+          </td>
+          <td class="text-center">
+            <button class="btn btn-sm btn-info me-1" (click)="verProducto(p); mostrarModalVer = true">
+              <i class="fas fa-eye text-white"></i>
+            </button>
+            <button class="btn btn-sm btn-warning me-1" (click)="abrirModalEditar(i, p); mostrarModalProducto = true">
+              <i class="fas fa-pencil-alt text-white"></i>
+            </button>
+            <button class="btn btn-sm btn-danger" (click)="eliminarProducto(i, p.nombre)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+        <tr *ngIf="listaFiltrada.length === 0">
+          <td colspan="8" class="text-center text-muted p-4">No se encontraron productos que coincidan con la búsqueda.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
 </main>
 
-<!-- Modal Formulario Producto -->
-<div class="modal fade" id="modalFormProducto" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">{{ esEdicion ? 'Editar Producto' : 'Agregar Nuevo Producto' }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form (ngSubmit)="guardarProducto()" #formProd="ngForm" novalidate>
-                    <div class="mb-2">
-                        <label>Código</label>
-                        <input class="form-control" name="codigo" [(ngModel)]="productoActual.codigo" required>
-                    </div>
-                    <div class="mb-2">
-                        <label>Nombre</label>
-                        <input class="form-control" name="nombre" [(ngModel)]="productoActual.nombre" required>
-                    </div>
-                    <div class="mb-2">
-                        <label>Ubicación</label>
-                        <input class="form-control" name="ubicacion" [(ngModel)]="productoActual.ubicacion" placeholder="Ej: B1, C2, D3..." required>
-                    </div>
-                    <div class="mb-2">
-                        <label>Stock</label>
-                        <input type="number" class="form-control" name="stock" [(ngModel)]="productoActual.stock" min="0" required>
-                    </div>
-                    <div class="mb-2">
-                        <label>Precio (S/)</label>
-                        <input type="number" class="form-control" name="precio" [(ngModel)]="productoActual.precio" step="0.01" min="0" required>
-                    </div>
-                    <div class="mb-3">
-                        <label>Estado</label>
-                        <select class="form-select" name="estado" [(ngModel)]="productoActual.estado">
-                            <option value="Disponible">Disponible</option>
-                            <option value="Bajo Stock">Bajo Stock</option>
-                            <option value="En Tránsito">En Tránsito</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-primary w-100" type="submit" [disabled]="!formProd.form.valid">Guardar</button>
-                </form>
-            </div>
-        </div>
+<div *ngIf="mostrarModalVer" class="modal-backdrop-custom">
+  <div class="modal-custom">
+    <div class="modal-header d-flex justify-content-between align-items-center p-3 border-bottom">
+      <h5 class="modal-title fw-bold">Detalle de Producto</h5>
+      <button class="btn btn-danger btn-sm" (click)="mostrarModalVer = false">X</button>
     </div>
+    <div class="modal-body p-4">
+      <div class="row mb-3">
+        <div class="col-5 text-muted">Código</div>
+        <div class="col-7 fw-bold">{{ productoActual.codigo }}</div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-5 text-muted">Nombre</div>
+        <div class="col-7 fw-bold">{{ productoActual.nombre }}</div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-5 text-muted">Ubicación</div>
+        <div class="col-7 fw-bold">{{ productoActual.ubicacion }}</div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-5 text-muted">Stock Actual</div>
+        <div class="col-7 fw-bold">{{ productoActual.stock }} unidades</div>
+      </div>
+      <div class="row mb-0">
+        <div class="col-5 text-muted">Precio Venta</div>
+        <div class="col-7 fw-bold text-primary">S/ {{ productoActual.precio | number:'1.2-2' }}</div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- Modal Ver Producto -->
-<div class="modal fade" id="modalVerProducto" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Detalles del Producto</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <p><strong>Código:</strong> {{ productoActual.codigo }}</p>
-                <p><strong>Nombre:</strong> {{ productoActual.nombre }}</p>
-                <p><strong>Ubicación:</strong> {{ productoActual.ubicacion || productoActual.categoria || 'N/A' }}</p>
-                <p><strong>Stock:</strong> {{ productoActual.stock }}</p>
-                <p><strong>Precio:</strong> S/ {{ productoActual.precio | number:'1.2-2' }}</p>
-                <p><strong>Estado:</strong> {{ productoActual.estado }}</p>
-            </div>
-        </div>
+<div *ngIf="mostrarModalProducto" class="modal-backdrop-custom">
+  <div class="modal-custom">
+    <div class="modal-header d-flex justify-content-between align-items-center p-3 border-bottom">
+      <h5 class="modal-title fw-bold">{{ esEdicion ? 'Editar Producto' : 'Nuevo Producto' }}</h5>
+      <button class="btn btn-danger btn-sm" (click)="mostrarModalProducto = false">X</button>
     </div>
+    <div class="modal-body p-4">
+      <form (ngSubmit)="guardarProducto()" #formProd="ngForm">
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Código</label>
+          <input class="form-control" name="codigo" [(ngModel)]="productoActual.codigo" required [readonly]="esEdicion">
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Nombre del Producto</label>
+          <input class="form-control" name="nombre" [(ngModel)]="productoActual.nombre" required>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label class="form-label small fw-bold">Ubicación</label>
+            <input class="form-control" name="ubicacion" [(ngModel)]="productoActual.ubicacion" required>
+          </div>
+          <div class="col-md-6 mb-3">
+            <label class="form-label small fw-bold">Stock</label>
+            <input type="number" class="form-control" name="stock" [(ngModel)]="productoActual.stock" required>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Precio (S/)</label>
+          <input type="number" class="form-control" name="precio" [(ngModel)]="productoActual.precio" required step="0.01">
+        </div>
+        <button class="btn btn-primary w-100 py-2 fw-bold" type="submit" [disabled]="!formProd.form.valid">
+          {{ esEdicion ? 'Guardar Cambios' : 'Registrar Producto' }}
+        </button>
+      </form>
+    </div>
+  </div>
 </div>
 
-<!-- Modal Historial de Precios -->
-<div class="modal fade" id="modalHistorialPrecios" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Historial de Precios - {{ productoActual.nombre }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h6 class="mb-0">Código: {{ productoSeleccionadoParaPrecio }}</h6>
-                    <button class="btn btn-success btn-sm" (click)="abrirCambioPrecio(); abrirModal('modalCambiarPrecio')">
-                        <i class="fas fa-edit me-1"></i> Cambiar Precio
-                    </button>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-hover table-sm">
-                        <thead>
-                            <tr>
-                                <th>Fecha</th>
-                                <th>Precio Anterior</th>
-                                <th>Precio Nuevo</th>
-                                <th>Motivo del Cambio</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let h of historialActual; let i = index; let last = last">
-                                <td>{{ h.fecha }}</td>
-                                <td>{{ last ? '-' : 'S/ ' + (historialActual[i+1].precio | number:'1.2-2') }}</td>
-                                <td [ngClass]="{'text-success': !last && h.precio > historialActual[i+1].precio, 'text-danger': !last && h.precio < historialActual[i+1].precio}">
-                                    S/ {{ h.precio | number:'1.2-2' }}
-                                </td>
-                                <td>{{ h.motivo }}</td>
-                                <td>
-                                    <small *ngIf="!last" [ngClass]="{'text-success': h.precio > historialActual[i+1].precio, 'text-danger': h.precio < historialActual[i+1].precio}">
-                                        {{ (h.precio - historialActual[i+1].precio) > 0 ? '+' : '' }}S/ {{ (h.precio - historialActual[i+1].precio) | number:'1.2-2' }}
-                                    </small>
-                                    <small *ngIf="last" class="text-muted">Precio inicial</small>
-                                </td>
-                            </tr>
-                            <tr *ngIf="historialActual.length === 0">
-                                <td colspan="5" class="text-center text-muted">No hay historial de precios disponible</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+<div *ngIf="mostrarModalHistorial" class="modal-backdrop-custom">
+  <div class="modal-custom modal-lg">
+    <div class="modal-header d-flex justify-content-between align-items-center p-3 border-bottom">
+      <h5 class="modal-title fw-bold">Historial: {{ productoActual.nombre }}</h5>
+      <button class="btn btn-danger btn-sm" (click)="mostrarModalHistorial = false">X</button>
     </div>
+    <div class="modal-body p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-muted small">Historial de cambios registrados</span>
+        <button class="btn btn-success btn-sm" (click)="abrirCambioPrecio(); mostrarModalCambioPrecio = true">
+          <i class="fas fa-edit me-1"></i> Nuevo Precio
+        </button>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm table-hover">
+          <thead class="table-light">
+            <tr>
+              <th>Fecha</th>
+              <th>Precio</th>
+              <th>Motivo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let h of historialActual">
+              <td>{{ h.fecha }}</td>
+              <td class="fw-bold text-primary">S/ {{ h.precio | number:'1.2-2' }}</td>
+              <td>{{ h.motivo }}</td>
+            </tr>
+            <tr *ngIf="historialActual.length === 0">
+              <td colspan="3" class="text-center text-muted p-4">No hay cambios registrados</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
-<!-- Modal Cambiar Precio -->
-<div class="modal fade" id="modalCambiarPrecio" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Cambiar Precio - {{ productoActual.nombre }}</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <form (ngSubmit)="guardarNuevoPrecio()">
-                    <div class="mb-3">
-                        <label class="form-label">Precio Actual</label>
-                        <input type="text" class="form-control" [value]="'S/ ' + (productoActual.precio | number:'1.2-2')" readonly>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Nuevo Precio (S/)</label>
-                        <input type="number" class="form-control" name="nuevoPrecio" [(ngModel)]="nuevoPrecio" step="0.01" min="0" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label">Motivo del Cambio</label>
-                        <textarea class="form-control" name="motivoCambio" [(ngModel)]="motivoCambio" rows="3" placeholder="Ej: Ajuste por inflación..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">Actualizar Precio</button>
-                </form>
-            </div>
-        </div>
+<div *ngIf="mostrarModalCambioPrecio" class="modal-backdrop-custom">
+  <div class="modal-custom">
+    <div class="modal-header d-flex justify-content-between align-items-center p-3 border-bottom text-white bg-dark rounded-top">
+      <h5 class="modal-title fw-bold m-0">Actualizar Precio</h5>
+      <button class="btn btn-outline-light btn-sm" (click)="mostrarModalCambioPrecio = false">X</button>
     </div>
+    <div class="modal-body p-4">
+      <form (ngSubmit)="guardarNuevoPrecio()">
+        <div class="mb-3">
+          <label class="form-label small fw-bold">Nuevo Precio (S/)</label>
+          <input type="number" class="form-control form-control-lg" [(ngModel)]="nuevoPrecio" name="nuevoPrecio" required step="0.01">
+        </div>
+        <div class="mb-4">
+          <label class="form-label small fw-bold">Motivo del ajuste</label>
+          <textarea class="form-control" [(ngModel)]="motivoCambio" name="motivoCambio" rows="3" placeholder="Ej: Aumento por costo de proveedor..." required></textarea>
+        </div>
+        <button type="submit" class="btn btn-success w-100 py-2 fw-bold">Confirmar Cambio</button>
+      </form>
+    </div>
+  </div>
 </div>

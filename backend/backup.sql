@@ -1,0 +1,759 @@
+﻿USE [master]
+GO
+/****** Object:  Database [KompressurDB]    Script Date: 11/07/2026 15:37:14 ******/
+CREATE DATABASE [KompressurDB]
+ CONTAINMENT = NONE
+ ON  PRIMARY 
+( NAME = N'KompressurDB', FILENAME = N'D:\rdsdbdata\DATA\KompressurDB.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
+ LOG ON 
+( NAME = N'KompressurDB_log', FILENAME = N'D:\rdsdbdata\DATA\KompressurDB_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
+ WITH CATALOG_COLLATION = DATABASE_DEFAULT
+GO
+ALTER DATABASE [KompressurDB] SET COMPATIBILITY_LEVEL = 150
+GO
+IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
+begin
+EXEC [KompressurDB].[dbo].[sp_fulltext_database] @action = 'enable'
+end
+GO
+ALTER DATABASE [KompressurDB] SET ANSI_NULL_DEFAULT OFF 
+GO
+ALTER DATABASE [KompressurDB] SET ANSI_NULLS OFF 
+GO
+ALTER DATABASE [KompressurDB] SET ANSI_PADDING OFF 
+GO
+ALTER DATABASE [KompressurDB] SET ANSI_WARNINGS OFF 
+GO
+ALTER DATABASE [KompressurDB] SET ARITHABORT OFF 
+GO
+ALTER DATABASE [KompressurDB] SET AUTO_CLOSE OFF 
+GO
+ALTER DATABASE [KompressurDB] SET AUTO_SHRINK OFF 
+GO
+ALTER DATABASE [KompressurDB] SET AUTO_UPDATE_STATISTICS ON 
+GO
+ALTER DATABASE [KompressurDB] SET CURSOR_CLOSE_ON_COMMIT OFF 
+GO
+ALTER DATABASE [KompressurDB] SET CURSOR_DEFAULT  GLOBAL 
+GO
+ALTER DATABASE [KompressurDB] SET CONCAT_NULL_YIELDS_NULL OFF 
+GO
+ALTER DATABASE [KompressurDB] SET NUMERIC_ROUNDABORT OFF 
+GO
+ALTER DATABASE [KompressurDB] SET QUOTED_IDENTIFIER OFF 
+GO
+ALTER DATABASE [KompressurDB] SET RECURSIVE_TRIGGERS OFF 
+GO
+ALTER DATABASE [KompressurDB] SET  ENABLE_BROKER 
+GO
+ALTER DATABASE [KompressurDB] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
+GO
+ALTER DATABASE [KompressurDB] SET DATE_CORRELATION_OPTIMIZATION OFF 
+GO
+ALTER DATABASE [KompressurDB] SET TRUSTWORTHY OFF 
+GO
+ALTER DATABASE [KompressurDB] SET ALLOW_SNAPSHOT_ISOLATION OFF 
+GO
+ALTER DATABASE [KompressurDB] SET PARAMETERIZATION SIMPLE 
+GO
+ALTER DATABASE [KompressurDB] SET READ_COMMITTED_SNAPSHOT OFF 
+GO
+ALTER DATABASE [KompressurDB] SET HONOR_BROKER_PRIORITY OFF 
+GO
+ALTER DATABASE [KompressurDB] SET RECOVERY FULL 
+GO
+ALTER DATABASE [KompressurDB] SET  MULTI_USER 
+GO
+ALTER DATABASE [KompressurDB] SET PAGE_VERIFY CHECKSUM  
+GO
+ALTER DATABASE [KompressurDB] SET DB_CHAINING OFF 
+GO
+ALTER DATABASE [KompressurDB] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
+GO
+ALTER DATABASE [KompressurDB] SET TARGET_RECOVERY_TIME = 60 SECONDS 
+GO
+ALTER DATABASE [KompressurDB] SET DELAYED_DURABILITY = DISABLED 
+GO
+ALTER DATABASE [KompressurDB] SET ACCELERATED_DATABASE_RECOVERY = OFF  
+GO
+ALTER DATABASE [KompressurDB] SET QUERY_STORE = OFF
+GO
+USE [KompressurDB]
+GO
+/****** Object:  User [admin]    Script Date: 11/07/2026 15:37:16 ******/
+CREATE USER [admin] FOR LOGIN [admin] WITH DEFAULT_SCHEMA=[dbo]
+GO
+ALTER ROLE [db_owner] ADD MEMBER [admin]
+GO
+/****** Object:  Table [dbo].[Clientes]    Script Date: 11/07/2026 15:37:16 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Clientes](
+	[id_cliente] [int] IDENTITY(1,1) NOT NULL,
+	[codigo] [varchar](20) NOT NULL,
+	[nombre] [varchar](100) NOT NULL,
+	[dni] [varchar](20) NULL,
+	[email] [varchar](100) NULL,
+	[telefono] [varchar](20) NULL,
+	[empresa] [varchar](100) NULL,
+	[ciudad] [varchar](50) NULL,
+	[estado] [varchar](20) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id_cliente] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Facturas]    Script Date: 11/07/2026 15:37:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Facturas](
+	[id_factura] [int] IDENTITY(1,1) NOT NULL,
+	[numero_factura] [varchar](20) NOT NULL,
+	[id_cliente] [int] NULL,
+	[fecha_emision] [date] NULL,
+	[monto_total] [decimal](10, 2) NULL,
+	[estado] [varchar](20) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id_factura] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Maquinas]    Script Date: 11/07/2026 15:37:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Maquinas](
+	[id_maquina] [int] IDENTITY(1,1) NOT NULL,
+	[codigo] [varchar](20) NOT NULL,
+	[nombre] [varchar](100) NOT NULL,
+	[id_cliente] [int] NULL,
+	[estado] [varchar](20) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id_maquina] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Productos]    Script Date: 11/07/2026 15:37:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Productos](
+	[id_producto] [int] IDENTITY(1,1) NOT NULL,
+	[codigo] [varchar](20) NOT NULL,
+	[nombre] [varchar](100) NOT NULL,
+	[ubicacion] [varchar](50) NULL,
+	[stock] [int] NULL,
+	[precio] [decimal](10, 2) NOT NULL,
+	[estado] [varchar](20) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id_producto] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Servicios]    Script Date: 11/07/2026 15:37:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Servicios](
+	[id_servicio] [int] IDENTITY(1,1) NOT NULL,
+	[id_cliente] [int] NULL,
+	[id_maquina] [int] NULL,
+	[id_vendedor] [int] NULL,
+	[fecha_servicio] [datetime] NULL,
+	[tipo_servicio] [varchar](50) NULL,
+	[motivo] [nvarchar](max) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id_servicio] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+/****** Object:  Table [dbo].[Vendedores]    Script Date: 11/07/2026 15:37:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE TABLE [dbo].[Vendedores](
+	[id_vendedor] [int] IDENTITY(1,1) NOT NULL,
+	[nombre] [varchar](100) NOT NULL,
+	[nivel] [varchar](20) NULL,
+PRIMARY KEY CLUSTERED 
+(
+	[id_vendedor] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+SET IDENTITY_INSERT [dbo].[Clientes] ON 
+
+CREATE TABLE [dbo].[Finanzas](
+    [id] [int] IDENTITY(1,1) NOT NULL,
+    [id_cliente] [int] NOT NULL,
+    [fecha_registrada] [datetime2](7) NOT NULL DEFAULT (getdate()),
+    [monto] [decimal](12, 2) NOT NULL DEFAULT (0.00),
+    [estado] [varchar](20) NOT NULL DEFAULT ('Pendiente'),
+PRIMARY KEY CLUSTERED 
+(
+    [id] ASC
+) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY],
+
+    CONSTRAINT [FK_finanzas_clientes] FOREIGN KEY ([id_cliente]) 
+        REFERENCES [dbo].[Clientes] ([id_cliente]) 
+        ON DELETE CASCADE,
+
+    CONSTRAINT [CHK_finanzas_estado] CHECK ([estado] IN ('Pendiente', 'Pagado', 'Vencido', 'Cancelado'))
+) ON [PRIMARY];
+GO
+
+CREATE TABLE inventario (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    ubicacion VARCHAR(150) NULL,
+    stock INT NOT NULL DEFAULT 0,
+    precio DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    estado VARCHAR(20) NOT NULL DEFAULT 'Activo',
+    
+    CONSTRAINT CHK_productos_estado CHECK (estado IN ('Activo', 'Inactivo', 'Agotado'))
+);
+GO
+
+
+	 
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (1, N'CLI-001', N'Juan Pérez Guzmán', N'12345678', N'juan.perez@email.com', N'999111222', N'Tecnología SAC', N'Lima', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (2, N'CLI-002', N'María García Tovar', N'87654321', N'maria.garcia@email.com', N'988222333', N'Innovación Digital', N'Arequipa', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (3, N'CLI-003', N'Carlos Ruiz González', N'76543210', N'carlos.ruiz@email.com', N'977333444', N'StartupTech', N'Trujillo', N'Inactivo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (4, N'CLI-004', N'Ana López Medina', N'11223344', N'ana.lopez@email.com', N'966444555', N'Logística Global', N'Lima', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (5, N'CLI-005', N'Luis Morales Castro', N'55667788', N'luis.morales@email.com', N'955555666', N'Repuestos del Sur', N'Cusco', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (6, N'CLI-006', N'Elena Torres Salas', N'99887766', N'elena.torres@email.com', N'944666777', N'Industria Perú', N'Callao', N'Inactivo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (7, N'CLI-007', N'Jorge Huamán Ríos', N'44332211', N'jorge.huaman@email.com', N'933777888', N'Servicios Aéreos', N'Lima', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (8, N'CLI-008', N'Sofía Castro Vega', N'22334455', N'sofia.castro@email.com', N'922888999', N'Compresores Norte', N'Chiclayo', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (9, N'CLI-009', N'Miguel Ángel Silva', N'66778899', N'miguel.silva@email.com', N'911999000', N'Metalmecánica S.A.', N'Huancayo', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (10, N'CLI-010', N'Carmen Ortiz León', N'10203040', N'carmen.ortiz@email.com', N'900111222', N'Talleres del Norte', N'Piura', N'Inactivo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (11, N'CLI-011', N'Pedro Quispe Díaz', N'50607080', N'pedro.quispe@email.com', N'911222333', N'Constructora SAC', N'Lima', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (12, N'CLI-012', N'Lucía Paredes Soto', N'90807060', N'lucia.paredes@email.com', N'922333444', N'Minera La Esperanza', N'Arequipa', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (13, N'CLI-013', N'Ricardo Luna Flores', N'12121212', N'ricardo.luna@email.com', N'933444555', N'Importadora ABC', N'Lima', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (14, N'CLI-014', N'Gabriela Vega Ruiz', N'23232323', N'gabriela.vega@email.com', N'944555666', N'Soluciones Industriales', N'Trujillo', N'Inactivo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (15, N'CLI-015', N'Fernando Díaz Cueva', N'34343434', N'fernando.diaz@email.com', N'955666777', N'Mantenimiento Pro', N'Callao', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (16, N'CLI-016', N'Valeria Ramos Polo', N'45454545', N'valeria.ramos@email.com', N'966777888', N'Energía y Aire', N'Lima', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (17, N'CLI-017', N'Diego Vargas Ruiz', N'56565656', N'diego.vargas@email.com', N'977888999', N'TecnoCompresores', N'Ica', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (18, N'CLI-018', N'Isabel Medina Paz', N'67676767', N'isabel.medina@email.com', N'988999000', N'Repuestos Industriales', N'Lima', N'Inactivo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (19, N'CLI-019', N'Javier Campos Ríos', N'78787878', N'javier.campos@email.com', N'999000111', N'Logística Integral', N'Arequipa', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (20, N'CLI-020', N'Patricia Soto León', N'89898989', N'patricia.soto@email.com', N'900111222', N'Fábrica del Norte', N'Chimbote', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (21, N'CLI-021', N'Roberto Yáñez', N'11112222', N'roberto.yanez@email.com', N'911222333', N'Transportes del Sur', N'Tacna', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (22, N'CLI-022', N'Silvia Mendoza', N'33334444', N'silvia.mendoza@email.com', N'922333444', N'Textiles SAC', N'Huancayo', N'Inactivo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (23, N'CLI-023', N'Hugo Paredes', N'55556666', N'hugo.paredes@email.com', N'933444555', N'Constructoras Unidas', N'Lima', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (24, N'CLI-024', N'Cecilia Nuñez', N'77778888', N'cecilia.nunez@email.com', N'944555666', N'Panaderías Industriales', N'Piura', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (25, N'CLI-025', N'Oscar Bravo', N'99990000', N'oscar.bravo@email.com', N'955666777', N'Metalurgia 2026', N'Lima', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (26, N'CLI-026', N'Laura Rivas', N'12312312', N'laura.rivas@email.com', N'966777888', N'Agroindustria SAC', N'Ica', N'Inactivo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (27, N'CLI-027', N'Manuel Rojas', N'45645645', N'manuel.rojas@email.com', N'977888999', N'Sistemas de Aire', N'Callao', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (28, N'CLI-028', N'Carmen Tello', N'78978978', N'carmen.tello@email.com', N'988999000', N'Innovaciones SAC', N'Lima', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (29, N'CLI-029', N'Esteban Jara', N'32132132', N'esteban.jara@email.com', N'999000111', N'Taller Pro', N'Trujillo', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (30, N'CLI-030', N'Rosa Valdivia', N'65465465', N'rosa.valdivia@email.com', N'900111222', N'Servicios Generales', N'Arequipa', N'Inactivo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (31, N'CLI-031', N'Arturo Calle', N'98798798', N'arturo.calle@email.com', N'911222333', N'Repuestos Rápidos', N'Lima', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (32, N'CLI-032', N'Paula Serna', N'15915915', N'paula.serna@email.com', N'922333444', N'Comercializadora X', N'Cusco', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (33, N'CLI-033', N'Felipe Castro', N'75375375', N'felipe.castro@email.com', N'933444555', N'Suministros del Perú', N'Lima', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (34, N'CLI-034', N'Irene Santos', N'85285285', N'irene.santos@email.com', N'944555666', N'Mantenimiento Total', N'Chiclayo', N'Inactivo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (35, N'CLI-035', N'Gonzalo Pardo', N'95195195', N'gonzalo.pardo@email.com', N'955666777', N'Soluciones 360', N'Huancayo', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (36, N'CLI-036', N'Beatriz Nole', N'14714714', N'beatriz.nole@email.com', N'966777888', N'Corporación Delta', N'Lima', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (37, N'CLI-037', N'César Huertas', N'25825825', N'cesar.huertas@email.com', N'977888999', N'TecnoSistemas', N'Ica', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (38, N'CLI-038', N'Miriam Salas', N'36936936', N'miriam.salas@email.com', N'988999000', N'Industrias del Este', N'Lima', N'Inactivo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (39, N'CLI-039', N'Daniel Lazo', N'96396396', N'daniel.lazo@email.com', N'999000111', N'Transportes Veloz', N'Arequipa', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (40, N'CLI-040', N'Sandra Zúñiga', N'35735735', N'sandra.zuniga@email.com', N'900111222', N'Almacenes Globales', N'Tacna', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (41, N'CLI-041', N'Jorge Linares', N'15975315', N'jorge.linares@email.com', N'911222333', N'Repuestos SAC', N'Lima', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (42, N'CLI-042', N'Mónica Rivas', N'95135795', N'monica.rivas@email.com', N'922333444', N'Tecnología 2026', N'Callao', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (43, N'CLI-043', N'Víctor Ponce', N'75395175', N'victor.ponce@email.com', N'933444555', N'ServiCompresores', N'Trujillo', N'Inactivo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (44, N'CLI-044', N'Elena Castro', N'35715935', N'elena.castro@email.com', N'944555666', N'Industrial del Sol', N'Lima', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (45, N'CLI-045', N'Raúl Mendoza', N'15935715', N'raul.mendoza@email.com', N'955666777', N'Logística Pro', N'Chimbote', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (46, N'CLI-046', N'Sofía Ramos', N'35795135', N'sofia.ramos@email.com', N'966777888', N'Equipos Perú', N'Lima', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (47, N'CLI-047', N'Oscar Huamaní', N'95175395', N'oscar.huamani@email.com', N'977888999', N'Suministros A1', N'Arequipa', N'Inactivo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (48, N'CLI-048', N'Lucía Torres', N'75315975', N'lucia.torres@email.com', N'988999000', N'Fábrica de Aire', N'Huancayo', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (49, N'CLI-049', N'Pedro Medina', N'15985215', N'pedro.medina@email.com', N'999000111', N'Comercial del Sur', N'Tacna', N'Activo')
+INSERT [dbo].[Clientes] ([id_cliente], [codigo], [nombre], [dni], [email], [telefono], [empresa], [ciudad], [estado]) VALUES (50, N'CLI-050', N'María López', N'85215985', N'maria.lopez@email.com', N'900111222', N'Soluciones Industriales', N'Lima', N'Activo')
+SET IDENTITY_INSERT [dbo].[Clientes] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Facturas] ON 
+
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (1, N'FAC-001', 1, CAST(N'2026-06-01' AS Date), CAST(2500.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (2, N'FAC-002', 2, CAST(N'2026-06-02' AS Date), CAST(1800.50 AS Decimal(10, 2)), N'Pendiente')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (3, N'FAC-003', 3, CAST(N'2026-06-03' AS Date), CAST(3200.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (4, N'FAC-004', 4, CAST(N'2026-06-04' AS Date), CAST(1500.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (5, N'FAC-005', 5, CAST(N'2026-06-05' AS Date), CAST(4200.75 AS Decimal(10, 2)), N'Pendiente')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (6, N'FAC-006', 6, CAST(N'2026-06-06' AS Date), CAST(950.25 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (7, N'FAC-007', 7, CAST(N'2026-06-07' AS Date), CAST(2100.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (8, N'FAC-008', 8, CAST(N'2026-06-08' AS Date), CAST(3100.00 AS Decimal(10, 2)), N'Pendiente')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (9, N'FAC-009', 9, CAST(N'2026-06-09' AS Date), CAST(450.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (10, N'FAC-010', 10, CAST(N'2026-06-10' AS Date), CAST(1200.50 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (11, N'FAC-011', 11, CAST(N'2026-06-11' AS Date), CAST(5000.00 AS Decimal(10, 2)), N'Pendiente')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (12, N'FAC-012', 12, CAST(N'2026-06-12' AS Date), CAST(2300.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (13, N'FAC-013', 13, CAST(N'2026-06-13' AS Date), CAST(1100.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (14, N'FAC-014', 14, CAST(N'2026-06-14' AS Date), CAST(2900.00 AS Decimal(10, 2)), N'Pendiente')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (15, N'FAC-015', 15, CAST(N'2026-06-15' AS Date), CAST(350.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (16, N'FAC-016', 16, CAST(N'2026-06-16' AS Date), CAST(800.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (17, N'FAC-017', 17, CAST(N'2026-06-17' AS Date), CAST(1950.00 AS Decimal(10, 2)), N'Pendiente')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (18, N'FAC-018', 18, CAST(N'2026-06-18' AS Date), CAST(2700.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (19, N'FAC-019', 19, CAST(N'2026-06-19' AS Date), CAST(4100.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (20, N'FAC-020', 20, CAST(N'2026-06-20' AS Date), CAST(600.00 AS Decimal(10, 2)), N'Pendiente')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (21, N'FAC-021', 21, CAST(N'2026-06-21' AS Date), CAST(1300.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (22, N'FAC-022', 22, CAST(N'2026-06-22' AS Date), CAST(2200.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (23, N'FAC-023', 23, CAST(N'2026-06-23' AS Date), CAST(3800.00 AS Decimal(10, 2)), N'Pendiente')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (24, N'FAC-024', 24, CAST(N'2026-06-24' AS Date), CAST(500.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (25, N'FAC-025', 25, CAST(N'2026-06-25' AS Date), CAST(1600.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (26, N'FAC-026', 26, CAST(N'2026-06-26' AS Date), CAST(2400.00 AS Decimal(10, 2)), N'Pendiente')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (27, N'FAC-027', 27, CAST(N'2026-06-27' AS Date), CAST(900.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (28, N'FAC-028', 28, CAST(N'2026-06-28' AS Date), CAST(3300.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (29, N'FAC-029', 29, CAST(N'2026-06-29' AS Date), CAST(1250.00 AS Decimal(10, 2)), N'Pendiente')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (30, N'FAC-030', 30, CAST(N'2026-06-30' AS Date), CAST(4700.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (31, N'FAC-031', 31, CAST(N'2026-07-01' AS Date), CAST(750.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (32, N'FAC-032', 32, CAST(N'2026-07-02' AS Date), CAST(1900.00 AS Decimal(10, 2)), N'Pendiente')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (33, N'FAC-033', 33, CAST(N'2026-07-03' AS Date), CAST(2600.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (34, N'FAC-034', 34, CAST(N'2026-07-04' AS Date), CAST(3900.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (35, N'FAC-035', 35, CAST(N'2026-07-05' AS Date), CAST(1400.00 AS Decimal(10, 2)), N'Pendiente')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (36, N'FAC-036', 36, CAST(N'2026-07-06' AS Date), CAST(2100.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (37, N'FAC-037', 37, CAST(N'2026-07-07' AS Date), CAST(850.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (38, N'FAC-038', 38, CAST(N'2026-07-08' AS Date), CAST(3100.00 AS Decimal(10, 2)), N'Pendiente')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (39, N'FAC-039', 39, CAST(N'2026-07-09' AS Date), CAST(4200.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (40, N'FAC-040', 40, CAST(N'2026-07-10' AS Date), CAST(950.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (41, N'FAC-041', 41, CAST(N'2026-07-10' AS Date), CAST(1300.00 AS Decimal(10, 2)), N'Pendiente')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (42, N'FAC-042', 42, CAST(N'2026-07-10' AS Date), CAST(2500.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (43, N'FAC-043', 43, CAST(N'2026-07-10' AS Date), CAST(3700.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (44, N'FAC-044', 44, CAST(N'2026-07-10' AS Date), CAST(600.00 AS Decimal(10, 2)), N'Pendiente')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (45, N'FAC-045', 45, CAST(N'2026-07-10' AS Date), CAST(1800.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (46, N'FAC-046', 46, CAST(N'2026-07-10' AS Date), CAST(2900.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (47, N'FAC-047', 47, CAST(N'2026-07-10' AS Date), CAST(4400.00 AS Decimal(10, 2)), N'Pendiente')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (48, N'FAC-048', 48, CAST(N'2026-07-10' AS Date), CAST(700.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (49, N'FAC-049', 49, CAST(N'2026-07-10' AS Date), CAST(1100.00 AS Decimal(10, 2)), N'Pagada')
+INSERT [dbo].[Facturas] ([id_factura], [numero_factura], [id_cliente], [fecha_emision], [monto_total], [estado]) VALUES (50, N'FAC-050', 50, CAST(N'2026-07-10' AS Date), CAST(2300.00 AS Decimal(10, 2)), N'Pendiente')
+SET IDENTITY_INSERT [dbo].[Facturas] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Maquinas] ON 
+
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (1, N'MAQ-001', N'Compresor Atlas Copco GA22', 1, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (2, N'MAQ-002', N'Compresor Kaeser SM16', 2, N'En Mantenimiento')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (3, N'MAQ-003', N'Secador Refrigerativo FD120', 3, N'Fuera de Servicio')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (4, N'MAQ-004', N'Compresor Ing. Rand UP6', 4, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (5, N'MAQ-005', N'Compresor Atlas Copco GA15', 5, N'En Mantenimiento')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (6, N'MAQ-006', N'Generador de Nitrógeno', 6, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (7, N'MAQ-007', N'Compresor Kaeser SK22', 7, N'Fuera de Servicio')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (8, N'MAQ-008', N'Tanque de Aire 500L', 8, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (9, N'MAQ-009', N'Compresor Tornillo GA30', 9, N'En Mantenimiento')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (10, N'MAQ-010', N'Secador Desecante', 10, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (11, N'MAQ-011', N'Compresor Piston 5HP', 11, N'Fuera de Servicio')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (12, N'MAQ-012', N'Compresor Atlas Copco GA55', 12, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (13, N'MAQ-013', N'Compresor Kaeser M50', 13, N'En Mantenimiento')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (14, N'MAQ-014', N'Bomba de Vacío', 14, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (15, N'MAQ-015', N'Compresor Ingersoll Rand R37', 15, N'Fuera de Servicio')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (16, N'MAQ-016', N'Compresor Atlas Copco GA90', 16, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (17, N'MAQ-017', N'Sistema de Filtración', 17, N'En Mantenimiento')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (18, N'MAQ-018', N'Compresor Kaeser SK25', 18, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (19, N'MAQ-019', N'Compresor Piston 10HP', 19, N'Fuera de Servicio')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (20, N'MAQ-020', N'Compresor Atlas Copco GA11', 20, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (21, N'MAQ-021', N'Secador Refrigerativo FD50', 21, N'En Mantenimiento')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (22, N'MAQ-022', N'Compresor Ingersoll Rand UP15', 22, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (23, N'MAQ-023', N'Compresor Kaeser SM8', 23, N'Fuera de Servicio')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (24, N'MAQ-024', N'Generador de Oxígeno', 24, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (25, N'MAQ-025', N'Tanque de Aire 200L', 25, N'En Mantenimiento')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (26, N'MAQ-026', N'Compresor Atlas Copco GA37', 26, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (27, N'MAQ-027', N'Compresor Kaeser M100', 27, N'Fuera de Servicio')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (28, N'MAQ-028', N'Compresor Piston 2HP', 28, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (29, N'MAQ-029', N'Compresor Ingersoll Rand R11', 29, N'En Mantenimiento')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (30, N'MAQ-030', N'Secador Desecante HOC', 30, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (31, N'MAQ-031', N'Compresor Atlas Copco GA200', 31, N'Fuera de Servicio')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (32, N'MAQ-032', N'Compresor Kaeser SK19', 32, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (33, N'MAQ-033', N'Bomba de Vacío Industrial', 33, N'En Mantenimiento')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (34, N'MAQ-034', N'Compresor Piston 15HP', 34, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (35, N'MAQ-035', N'Compresor Ingersoll Rand UP22', 35, N'Fuera de Servicio')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (36, N'MAQ-036', N'Compresor Atlas Copco GA18', 36, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (37, N'MAQ-037', N'Tanque de Aire 1000L', 37, N'En Mantenimiento')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (38, N'MAQ-038', N'Compresor Kaeser SM12', 38, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (39, N'MAQ-039', N'Secador Refrigerativo FD10', 39, N'Fuera de Servicio')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (40, N'MAQ-040', N'Compresor Ingersoll Rand R55', 40, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (41, N'MAQ-041', N'Compresor Atlas Copco GA160', 41, N'En Mantenimiento')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (42, N'MAQ-042', N'Compresor Kaeser SK26', 42, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (43, N'MAQ-043', N'Bomba de Vacío Serie V', 43, N'Fuera de Servicio')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (44, N'MAQ-044', N'Compresor Piston 7.5HP', 44, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (45, N'MAQ-045', N'Compresor Ingersoll Rand UP30', 45, N'En Mantenimiento')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (46, N'MAQ-046', N'Compresor Atlas Copco GA132', 46, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (47, N'MAQ-047', N'Tanque de Aire 300L', 47, N'Fuera de Servicio')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (48, N'MAQ-048', N'Compresor Kaeser M20', 48, N'Operativa')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (49, N'MAQ-049', N'Secador Refrigerativo FD30', 49, N'En Mantenimiento')
+INSERT [dbo].[Maquinas] ([id_maquina], [codigo], [nombre], [id_cliente], [estado]) VALUES (50, N'MAQ-050', N'Compresor Atlas Copco GA5', 50, N'Operativa')
+SET IDENTITY_INSERT [dbo].[Maquinas] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Productos] ON 
+
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (1, N'PROD-001', N'Filtro de Aire Primario', N'A1', 45, CAST(120.50 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (2, N'PROD-002', N'Filtro de Aceite', N'A1', 80, CAST(85.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (3, N'PROD-003', N'Separador de Aceite', N'A2', 30, CAST(250.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (4, N'PROD-004', N'Aceite Sintético 5L', N'A3', 60, CAST(180.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (5, N'PROD-005', N'Kit de Válvulas', N'B1', 15, CAST(450.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (6, N'PROD-006', N'Correa de Transmisión', N'B2', 25, CAST(95.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (7, N'PROD-007', N'Rodamiento de Motor', N'B3', 40, CAST(150.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (8, N'PROD-008', N'Sensor de Presión', N'C1', 10, CAST(320.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (9, N'PROD-009', N'Panel de Control Digital', N'C2', 5, CAST(850.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (10, N'PROD-010', N'Manguera de Alta Presión', N'D1', 100, CAST(45.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (11, N'PROD-011', N'Acople Rápido 1/2', N'D2', 200, CAST(25.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (12, N'PROD-012', N'Válvula de Seguridad', N'D3', 20, CAST(110.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (13, N'PROD-013', N'Radiador de Enfriamiento', N'E1', 8, CAST(950.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (14, N'PROD-014', N'Ventilador de Enfriamiento', N'E2', 12, CAST(380.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (15, N'PROD-015', N'Presostato', N'F1', 25, CAST(160.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (16, N'PROD-016', N'Filtro de Línea 0.01', N'F2', 35, CAST(210.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (17, N'PROD-017', N'Purgador Automático', N'F3', 18, CAST(130.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (18, N'PROD-018', N'Kit de Sellos', N'G1', 55, CAST(75.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (19, N'PROD-019', N'Motor Eléctrico 10HP', N'G2', 3, CAST(2800.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (20, N'PROD-020', N'Motor Eléctrico 20HP', N'G3', 2, CAST(4500.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (21, N'PROD-021', N'Manómetro 0-16 bar', N'H1', 40, CAST(60.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (22, N'PROD-022', N'Interruptor Magnético', N'H2', 30, CAST(90.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (23, N'PROD-023', N'Contactores 24V', N'H3', 50, CAST(115.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (24, N'PROD-024', N'Relevador Térmico', N'I1', 22, CAST(140.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (25, N'PROD-025', N'Lubricante Grado Alimenticio', N'I2', 15, CAST(310.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (26, N'PROD-026', N'Filtro de Aire Secundario', N'A1', 70, CAST(65.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (27, N'PROD-027', N'Banda Trapezoidal', N'B2', 45, CAST(80.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (28, N'PROD-028', N'Tornillo de Ajuste', N'J1', 300, CAST(5.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (29, N'PROD-029', N'Abrazadera Metálica', N'J2', 500, CAST(3.50 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (30, N'PROD-030', N'Codo 90 grados 1"', N'J3', 150, CAST(12.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (31, N'PROD-031', N'Tee de Conexión', N'J4', 120, CAST(15.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (32, N'PROD-032', N'Silenciador de Escape', N'K1', 20, CAST(85.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (33, N'PROD-033', N'Elemento Separador', N'A2', 10, CAST(420.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (34, N'PROD-034', N'Kit de Mantenimiento 2000h', N'L1', 12, CAST(1200.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (35, N'PROD-035', N'Kit de Mantenimiento 4000h', N'L1', 8, CAST(1800.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (36, N'PROD-036', N'Tarjeta Electrónica Base', N'C2', 4, CAST(1100.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (37, N'PROD-037', N'Cables de Potencia', N'M1', 60, CAST(40.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (38, N'PROD-038', N'Bomba de Aceite', N'M2', 6, CAST(650.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (39, N'PROD-039', N'Válvula Solenoide', N'N1', 25, CAST(230.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (40, N'PROD-040', N'Termostato de Aceite', N'N2', 30, CAST(95.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (41, N'PROD-041', N'Junta de Culata', N'O1', 40, CAST(120.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (42, N'PROD-042', N'Pistón Compresor', N'O2', 10, CAST(550.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (43, N'PROD-043', N'Biela para Compresor', N'O3', 8, CAST(480.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (44, N'PROD-044', N'Cojinete de Bancada', N'P1', 50, CAST(65.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (45, N'PROD-045', N'Retén de Cigüeñal', N'P2', 45, CAST(45.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (46, N'PROD-046', N'Filtro Deshidratador', N'Q1', 20, CAST(270.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (47, N'PROD-047', N'Tanque de Aire 500L', N'R1', 2, CAST(3500.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (48, N'PROD-048', N'Secador Refrigerativo', N'S1', 3, CAST(5200.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (49, N'PROD-049', N'Purgador Electrónico', N'F3', 15, CAST(340.00 AS Decimal(10, 2)), N'Disponible')
+INSERT [dbo].[Productos] ([id_producto], [codigo], [nombre], [ubicacion], [stock], [precio], [estado]) VALUES (50, N'PROD-050', N'Kit de Etiquetas Seguridad', N'T1', 80, CAST(20.00 AS Decimal(10, 2)), N'Disponible')
+SET IDENTITY_INSERT [dbo].[Productos] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Servicios] ON 
+
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (1, 1, 1, 1, CAST(N'2026-06-01T10:00:00.000' AS DateTime), N'Preventivo', N'Cambio de filtros y aceite')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (2, 2, 2, 2, CAST(N'2026-06-02T11:30:00.000' AS DateTime), N'Correctivo', N'Fuga de aire en manguera')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (3, 3, 3, 3, CAST(N'2026-06-03T09:15:00.000' AS DateTime), N'Garantía', N'Revisión de panel digital')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (4, 4, 4, 4, CAST(N'2026-06-04T14:00:00.000' AS DateTime), N'Preventivo', N'Ajuste de correas')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (5, 5, 5, 5, CAST(N'2026-06-05T16:45:00.000' AS DateTime), N'Correctivo', N'Sobrecalentamiento motor')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (6, 6, 6, 6, CAST(N'2026-06-06T08:30:00.000' AS DateTime), N'Preventivo', N'Limpieza de radiador')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (7, 7, 7, 7, CAST(N'2026-06-07T10:20:00.000' AS DateTime), N'Garantía', N'Error de sensor presión')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (8, 8, 8, 8, CAST(N'2026-06-08T11:00:00.000' AS DateTime), N'Preventivo', N'Cambio de separador')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (9, 9, 9, 9, CAST(N'2026-06-09T15:30:00.000' AS DateTime), N'Correctivo', N'Ruido inusual en rodamiento')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (10, 10, 10, 10, CAST(N'2026-06-10T09:00:00.000' AS DateTime), N'Preventivo', N'Calibración de válvulas')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (11, 11, 11, 11, CAST(N'2026-06-11T10:15:00.000' AS DateTime), N'Correctivo', N'Falla en encendido')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (12, 12, 12, 12, CAST(N'2026-06-12T13:20:00.000' AS DateTime), N'Preventivo', N'Cambio de aceite sintético')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (13, 13, 13, 13, CAST(N'2026-06-13T14:50:00.000' AS DateTime), N'Garantía', N'Desalineación de poleas')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (14, 14, 14, 14, CAST(N'2026-06-14T11:10:00.000' AS DateTime), N'Preventivo', N'Limpieza general')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (15, 15, 15, 15, CAST(N'2026-06-15T16:00:00.000' AS DateTime), N'Correctivo', N'Reemplazo de manómetro')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (16, 16, 16, 16, CAST(N'2026-06-16T09:40:00.000' AS DateTime), N'Preventivo', N'Ajuste de presión')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (17, 17, 17, 17, CAST(N'2026-06-17T10:30:00.000' AS DateTime), N'Correctivo', N'Falla en sistema eléctrico')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (18, 18, 18, 18, CAST(N'2026-06-18T12:00:00.000' AS DateTime), N'Preventivo', N'Revisión de fugas')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (19, 19, 19, 19, CAST(N'2026-06-19T15:00:00.000' AS DateTime), N'Garantía', N'Válvula de seguridad bloqueada')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (20, 20, 20, 20, CAST(N'2026-06-20T08:20:00.000' AS DateTime), N'Preventivo', N'Cambio de filtros de aire')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (21, 21, 21, 21, CAST(N'2026-06-21T10:50:00.000' AS DateTime), N'Correctivo', N'Reparación de solenoide')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (22, 22, 22, 22, CAST(N'2026-06-22T11:45:00.000' AS DateTime), N'Preventivo', N'Chequeo de niveles')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (23, 23, 23, 23, CAST(N'2026-06-23T14:10:00.000' AS DateTime), N'Garantía', N'Problema con contactores')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (24, 24, 24, 24, CAST(N'2026-06-24T16:30:00.000' AS DateTime), N'Preventivo', N'Limpieza de filtros')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (25, 25, 25, 25, CAST(N'2026-06-25T09:00:00.000' AS DateTime), N'Correctivo', N'Reemplazo de manguera')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (26, 26, 26, 26, CAST(N'2026-06-26T10:00:00.000' AS DateTime), N'Preventivo', N'Ajuste de parámetros')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (27, 27, 27, 27, CAST(N'2026-06-27T11:20:00.000' AS DateTime), N'Correctivo', N'Falla de sensor temperatura')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (28, 28, 28, 28, CAST(N'2026-06-28T13:40:00.000' AS DateTime), N'Preventivo', N'Cambio de rodamiento')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (29, 29, 29, 29, CAST(N'2026-06-29T15:10:00.000' AS DateTime), N'Garantía', N'Revisión de compresor')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (30, 30, 30, 30, CAST(N'2026-06-30T08:50:00.000' AS DateTime), N'Preventivo', N'Cambio de aceite')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (31, 31, 31, 31, CAST(N'2026-07-01T10:30:00.000' AS DateTime), N'Correctivo', N'Reparación de pistón')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (32, 32, 32, 32, CAST(N'2026-07-02T12:00:00.000' AS DateTime), N'Preventivo', N'Limpieza de tanques')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (33, 33, 33, 33, CAST(N'2026-07-03T14:20:00.000' AS DateTime), N'Correctivo', N'Cambio de empaquetadura')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (34, 34, 34, 34, CAST(N'2026-07-04T16:00:00.000' AS DateTime), N'Preventivo', N'Ajuste de pernos')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (35, 35, 35, 35, CAST(N'2026-07-05T09:30:00.000' AS DateTime), N'Garantía', N'Falla de tarjeta madre')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (36, 36, 36, 36, CAST(N'2026-07-06T10:45:00.000' AS DateTime), N'Preventivo', N'Cambio de sellos')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (37, 37, 37, 37, CAST(N'2026-07-07T11:15:00.000' AS DateTime), N'Correctivo', N'Reparación de biela')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (38, 38, 38, 38, CAST(N'2026-07-08T14:00:00.000' AS DateTime), N'Preventivo', N'Revisión técnica')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (39, 39, 39, 39, CAST(N'2026-07-09T15:30:00.000' AS DateTime), N'Garantía', N'Filtro defectuoso')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (40, 40, 40, 40, CAST(N'2026-07-10T08:30:00.000' AS DateTime), N'Preventivo', N'Cambio de lubricante')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (41, 41, 41, 41, CAST(N'2026-07-10T09:40:00.000' AS DateTime), N'Correctivo', N'Reparación de bomba')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (42, 42, 42, 42, CAST(N'2026-07-10T10:50:00.000' AS DateTime), N'Preventivo', N'Ajuste de bandas')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (43, 43, 43, 43, CAST(N'2026-07-10T11:00:00.000' AS DateTime), N'Correctivo', N'Error de comunicación')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (44, 44, 44, 44, CAST(N'2026-07-10T12:15:00.000' AS DateTime), N'Preventivo', N'Cambio de filtro primario')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (45, 45, 45, 45, CAST(N'2026-07-10T13:30:00.000' AS DateTime), N'Garantía', N'Reemplazo de termostato')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (46, 46, 46, 46, CAST(N'2026-07-10T14:00:00.000' AS DateTime), N'Preventivo', N'Limpieza de ventiladores')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (47, 47, 47, 47, CAST(N'2026-07-10T14:45:00.000' AS DateTime), N'Correctivo', N'Fuga de aceite')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (48, 48, 48, 48, CAST(N'2026-07-10T15:10:00.000' AS DateTime), N'Preventivo', N'Revisión general')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (49, 49, 49, 49, CAST(N'2026-07-10T15:30:00.000' AS DateTime), N'Correctivo', N'Problema con presostato')
+INSERT [dbo].[Servicios] ([id_servicio], [id_cliente], [id_maquina], [id_vendedor], [fecha_servicio], [tipo_servicio], [motivo]) VALUES (50, 50, 50, 50, CAST(N'2026-07-10T16:00:00.000' AS DateTime), N'Preventivo', N'Cambio de sellos hidráulicos')
+SET IDENTITY_INSERT [dbo].[Servicios] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Vendedores] ON 
+
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (1, N'Carlos Huamán', N'Senior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (2, N'Ana Quispe', N'Medio')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (3, N'Luis Torres', N'Junior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (4, N'María López', N'Senior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (5, N'Jorge Díaz', N'Experto')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (6, N'Elena Salas', N'Medio')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (7, N'Miguel Vega', N'Junior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (8, N'Sofía Castro', N'Senior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (9, N'Javier Ríos', N'Medio')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (10, N'Patricia León', N'Senior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (11, N'Roberto Yáñez', N'Junior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (12, N'Silvia Mendoza', N'Experto')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (13, N'Hugo Paredes', N'Medio')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (14, N'Cecilia Nuñez', N'Senior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (15, N'Oscar Bravo', N'Junior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (16, N'Laura Rivas', N'Medio')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (17, N'Manuel Rojas', N'Senior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (18, N'Carmen Tello', N'Experto')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (19, N'Esteban Jara', N'Junior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (20, N'Rosa Valdivia', N'Medio')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (21, N'Arturo Calle', N'Senior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (22, N'Paula Serna', N'Junior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (23, N'Felipe Castro', N'Senior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (24, N'Irene Santos', N'Medio')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (25, N'Gonzalo Pardo', N'Experto')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (26, N'Beatriz Nole', N'Junior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (27, N'César Huertas', N'Senior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (28, N'Miriam Salas', N'Medio')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (29, N'Daniel Lazo', N'Senior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (30, N'Sandra Zúñiga', N'Junior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (31, N'Jorge Linares', N'Experto')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (32, N'Mónica Rivas', N'Senior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (33, N'Víctor Ponce', N'Medio')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (34, N'Elena Castro', N'Junior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (35, N'Raúl Mendoza', N'Senior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (36, N'Sofía Ramos', N'Experto')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (37, N'Oscar Huamaní', N'Medio')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (38, N'Lucía Torres', N'Junior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (39, N'Pedro Medina', N'Senior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (40, N'María López', N'Medio')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (41, N'Alberto Cruz', N'Junior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (42, N'Rosa Vargas', N'Senior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (43, N'David Silva', N'Experto')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (44, N'Diana Ruiz', N'Medio')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (45, N'Ricardo Paz', N'Junior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (46, N'Valeria Ríos', N'Senior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (47, N'Fernando Solís', N'Medio')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (48, N'Isabel Cueva', N'Senior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (49, N'Javier Salas', N'Junior')
+INSERT [dbo].[Vendedores] ([id_vendedor], [nombre], [nivel]) VALUES (50, N'Lucía Dávila', N'Experto')
+SET IDENTITY_INSERT [dbo].[Vendedores] OFF
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ__Clientes__40F9A206AC783469]    Script Date: 11/07/2026 15:37:17 ******/
+ALTER TABLE [dbo].[Clientes] ADD UNIQUE NONCLUSTERED 
+(
+	[codigo] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ__Facturas__3DC4B241766AE75A]    Script Date: 11/07/2026 15:37:17 ******/
+ALTER TABLE [dbo].[Facturas] ADD UNIQUE NONCLUSTERED 
+(
+	[numero_factura] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ__Maquinas__40F9A206DD0F2AC2]    Script Date: 11/07/2026 15:37:17 ******/
+ALTER TABLE [dbo].[Maquinas] ADD UNIQUE NONCLUSTERED 
+(
+	[codigo] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UQ__Producto__40F9A2065366B610]    Script Date: 11/07/2026 15:37:17 ******/
+ALTER TABLE [dbo].[Productos] ADD UNIQUE NONCLUSTERED 
+(
+	[codigo] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+GO
+ALTER TABLE [dbo].[Clientes] ADD  DEFAULT ('Activo') FOR [estado]
+GO
+ALTER TABLE [dbo].[Productos] ADD  DEFAULT ((0)) FOR [stock]
+GO
+ALTER TABLE [dbo].[Productos] ADD  DEFAULT ('Disponible') FOR [estado]
+GO
+ALTER TABLE [dbo].[Facturas]  WITH CHECK ADD FOREIGN KEY([id_cliente])
+REFERENCES [dbo].[Clientes] ([id_cliente])
+GO
+ALTER TABLE [dbo].[Maquinas]  WITH CHECK ADD FOREIGN KEY([id_cliente])
+REFERENCES [dbo].[Clientes] ([id_cliente])
+GO
+ALTER TABLE [dbo].[Servicios]  WITH CHECK ADD FOREIGN KEY([id_cliente])
+REFERENCES [dbo].[Clientes] ([id_cliente])
+GO
+ALTER TABLE [dbo].[Servicios]  WITH CHECK ADD FOREIGN KEY([id_maquina])
+REFERENCES [dbo].[Maquinas] ([id_maquina])
+GO
+ALTER TABLE [dbo].[Servicios]  WITH CHECK ADD FOREIGN KEY([id_vendedor])
+REFERENCES [dbo].[Vendedores] ([id_vendedor])
+GO
+/****** Object:  StoredProcedure [dbo].[usp_ListarClientes]    Script Date: 11/07/2026 15:37:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[usp_ListarClientes]
+AS
+    SELECT * FROM Clientes;
+GO
+/****** Object:  StoredProcedure [dbo].[usp_ListarFacturas]    Script Date: 11/07/2026 15:37:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[usp_ListarFacturas]
+AS
+    SELECT * FROM Facturas;
+GO
+/****** Object:  StoredProcedure [dbo].[usp_ListarMaquinas]    Script Date: 11/07/2026 15:37:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[usp_ListarMaquinas]
+AS
+    SELECT * FROM Maquinas;
+GO
+/****** Object:  StoredProcedure [dbo].[usp_ListarProductos]    Script Date: 11/07/2026 15:37:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[usp_ListarProductos]
+AS
+    SELECT * FROM Productos;
+GO
+/****** Object:  StoredProcedure [dbo].[usp_ListarServicios]    Script Date: 11/07/2026 15:37:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[usp_ListarServicios]
+AS
+    SELECT s.*, c.nombre AS NombreCliente, m.nombre AS NombreMaquina 
+    FROM Servicios s
+    INNER JOIN Clientes c ON s.id_cliente = c.id_cliente
+    INNER JOIN Maquinas m ON s.id_maquina = m.id_maquina;
+GO
+/****** Object:  StoredProcedure [dbo].[usp_ListarVendedores]    Script Date: 11/07/2026 15:37:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+CREATE PROC [dbo].[usp_ListarVendedores]
+AS
+    SELECT * FROM Vendedores;
+GO
+/****** Object:  StoredProcedure [dbo].[usp_ObtenerCliente]    Script Date: 11/07/2026 15:37:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROC [dbo].[usp_ObtenerCliente]
+    @id INT
+AS
+    SELECT * FROM Clientes WHERE id_cliente = @id;
+GO
+/****** Object:  StoredProcedure [dbo].[usp_ObtenerFactura]    Script Date: 11/07/2026 15:37:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROC [dbo].[usp_ObtenerFactura]
+    @id INT
+AS
+    SELECT * FROM Facturas WHERE id_factura = @id;
+GO
+/****** Object:  StoredProcedure [dbo].[usp_ObtenerMaquina]    Script Date: 11/07/2026 15:37:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROC [dbo].[usp_ObtenerMaquina]
+    @id INT
+AS
+    SELECT * FROM Maquinas WHERE id_maquina = @id;
+GO
+/****** Object:  StoredProcedure [dbo].[usp_ObtenerProducto]    Script Date: 11/07/2026 15:37:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROC [dbo].[usp_ObtenerProducto]
+    @id INT
+AS
+    SELECT * FROM Productos WHERE id_producto = @id;
+GO
+/****** Object:  StoredProcedure [dbo].[usp_ObtenerVendedor]    Script Date: 11/07/2026 15:37:17 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROC [dbo].[usp_ObtenerVendedor]
+    @id INT
+AS
+    SELECT * FROM Vendedores WHERE id_vendedor = @id;
+GO
+USE [master]
+GO
+ALTER DATABASE [KompressurDB] SET  READ_WRITE 
+GO
+
+INSERT INTO [dbo].[inventario] ([nombre], [ubicacion], [stock], [precio], [estado]) VALUES
+('Laptop HP ProBook', 'Pasillo A - Estante 1', 15, 850.00, 'Activo'),
+('Mouse Óptico Logitech', 'Pasillo B - Estante 3', 50, 25.50, 'Activo'),
+('Teclado Mecánico RGB', 'Pasillo B - Estante 2', 0, 65.00, 'Agotado'),
+('Monitor 24 Pulgadas ASUS', 'Pasillo A - Estante 4', 8, 199.99, 'Activo'),
+('Impresora Epson EcoTank', 'Almacén Central', 4, 280.00, 'Activo'),
+('Disco Duro Externo 1TB', 'Pasillo C - Estante 1', 30, 55.00, 'Activo'),
+('Memoria RAM DDR4 16GB', 'Pasillo C - Estante 2', 12, 45.00, 'Activo'),
+('Tarjeta de Video RTX 4060', 'Vitrina Principal', 0, 420.00, 'Agotado'),
+('Cable HDMI 2 Metros', 'Pasillo D - Estante 1', 100, 7.50, 'Activo'),
+('Auriculares HyperX Cloud', 'Pasillo B - Estante 5', 22, 89.90, 'Activo'),
+('Silla Gamer Ergonómica', 'Almacén Central', 5, 250.00, 'Activo'),
+('Cámara Web Full HD Logi', 'Pasillo B - Estante 4', 18, 49.99, 'Activo'),
+('Router Wi-Fi TP-Link', 'Pasillo D - Estante 3', 14, 35.00, 'Activo'),
+('Proyector Multimedia BenQ', 'Almacén Central', 2, 599.00, 'Inactivo'),
+('Batería Externa 10000mAh', 'Pasillo C - Estante 5', 40, 19.99, 'Activo');
+GO
+
+
+INSERT INTO [dbo].[Finanzas] ([id_cliente], [fecha_registrada], [monto], [estado]) VALUES
+(1, '2026-07-01 10:30:00', 1250.00, 'Pagado'),
+(2, '2026-07-02 11:15:00', 450.50, 'Pendiente'),
+(3, '2026-06-15 09:00:00', 890.00, 'Vencido'),
+(4, '2026-07-04 14:20:00', 2300.00, 'Pagado'),
+(5, '2026-07-05 16:45:00', 150.00, 'Pendiente'),
+(6, '2026-07-06 12:10:00', 720.00, 'Pagado'),
+(7, '2026-05-20 10:00:00', 3100.00, 'Cancelado'),
+(8, '2026-07-08 08:35:00', 95.00, 'Pagado'),
+(9, '2026-07-09 17:00:00', 540.00, 'Pendiente'),
+(10, '2026-07-10 11:55:00', 1800.00, 'Pagado'),
+(11, '2026-07-11 15:30:00', 350.00, 'Pendiente'),
+(12, '2026-06-01 13:00:00', 120.00, 'Vencido'),
+(13, '2026-07-12 09:15:00', 999.99, 'Pendiente'),
+(14, '2026-07-12 14:00:00', 45.50, 'Pagado'),
+(15, '2026-07-12 16:20:00', 670.00, 'Pendiente');
+GO

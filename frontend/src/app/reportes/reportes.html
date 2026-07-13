@@ -1,351 +1,292 @@
-<div class="container mt-4">
+<main class="container mt-4">
 
-    <nav aria-label="breadcrumb">
+  <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item">
+      <li class="breadcrumb-item">
         <a routerLink="/dashboard">
-            Volver a la Página Principal
+          Volver a la Página Principal
         </a>
-        </li>
-        <li class="breadcrumb-item active">
+      </li>
+      <li class="breadcrumb-item active">
         Reportes
-        </li>
+      </li>
     </ol>
-    </nav>
+  </nav>
 
-    <h1 class="mb-2">Reportes</h1>
-    <p class="text-muted mb-4">
+  <h1 class="mb-2">Reportes</h1>
+
+  <p class="text-muted mb-4">
     Generación y visualización de reportes
-    </p>
-    <main>
-        <section class="row g-4 mb-4">
-            <div class="col-md-4">
-                <div class="bg-white summary-card d-flex align-items-center">
-                    <i class="fas fa-chart-line text-primary me-3" style="font-size: 2rem;"></i>
-                    <div>
-                        <p class="mb-0 text-muted">Reportes Generados</p>
-                        <h4 class="mb-0 fw-bold">
-                            {{ totalesReportes().totalgenerados }}
-                        </h4>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="bg-white summary-card d-flex align-items-center">
-                    <i class="fas fa-file-alt text-success me-3" style="font-size: 2rem;"></i>
-                    <div>
-                        <p class="mb-0 text-muted">Reportes Activos</p>
-                        <h4 class="mb-0 fw-bold">
-                            {{ totalesReportes().totalactivos }}
-                        </h4>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="bg-white summary-card d-flex align-items-center">
-                    <i class="fas fa-archive text-purple me-3" style="font-size: 2rem;"></i>
-                    <div>
-                        <p class="mb-0 text-muted">Reportes Archivados</p>
-                        <h4 class="mb-0 fw-bold">
-                            {{ totalesReportes().totalarchivados }}
-                        </h4>
-                    </div>
-                </div>
-            </div>
-        </section>
+  </p>
 
-        <!-- Sistema de Pestañas -->
-        <div class="tabs-container">
-            <ul class="nav nav-tabs" id="reportTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button
-                        class="nav-link"
-                        [class.active]="pestanaActiva === 'inventario'"
-                        (click)="cambiarPestana('inventario')">
-                        <i class="fas fa-boxes me-2"></i>
-                        Inventario
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button
-                        class="nav-link"
-                        [class.active]="pestanaActiva === 'rendimiento'"
-                        (click)="cambiarPestana('rendimiento')">
-                        <i class="fas fa-chart-line me-2"></i>
-                        Rendimiento Comercial
-                    </button>
-                </li>
-            </ul>
-            
-            <div class="tab-content" id="reportTabsContent">
-                <!-- Pestaña Inventario -->
-                <div *ngIf="pestanaActiva === 'inventario'">
-                    <section class="table-container">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="mb-0">Reporte de Stock Actual</h5>
-                            <div>
-                                <button
-                                class="btn btn-dark me-2"
-                                (click)="agregarReporte()">
-                                    <i class="fas fa-plus me-1"></i>
-                                    Nuevo Reporte
-                                </button>
-                                <button
-                                class="btn btn-outline-secondary"
-                                (click)="exportarExcel()">
-                                    <i class="fas fa-download me-1"></i>
-                                    Exportar
-                                </button>                            
-                            </div>
-                        </div>
-                        <div class="mb-3 d-flex align-items-center">
-                            <input type="text" class="form-control me-2" [(ngModel)]="textoBusqueda" placeholder="Buscar reportes por nombre, fecha...">
-                            <button class="btn btn-primary"><i class="fas fa-search"></i></button>
-                        </div>
-                        <table class="table table-hover table-striped">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Nombre</th>
-                                    <th>Fecha</th>
-                                    <th>Estado</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let reporte of reportesFiltrados">
-                                    <td>{{ reporte.id_reporte }}</td>
-                                    <td>{{ reporte.nombre }}</td>
-                                    <td>{{ reporte.fecha }}</td>
-                                    <td>
-                                        <span
-                                            class="badge"
-                                            [ngClass]="{
-                                                'bg-success': reporte.estado === 'Activo',
-                                                'bg-warning': reporte.estado === 'Archivado'
-                                            }">
-                                            {{ reporte.estado }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <button
-                                        class="btn btn-sm btn-info me-1"
-                                        (click)="verReporte(reporte)">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                        <button
-                                        class="btn btn-sm btn-warning me-1"
-                                        (click)="editarReporte(reporte)">
-                                            <i class="fas fa-pencil-alt"></i>
-                                        </button>
-                                        <button
-                                        class="btn btn-sm btn-danger"
-                                        (click)="eliminarReporte(reporte.id_reporte)">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>                        
-                        </table>
-                    </section>
-                </div>
-                
-                <!-- Pestaña Rendimiento Comercial -->
-                <div *ngIf="pestanaActiva === 'rendimiento'">
-                    <section class="table-container">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="mb-0">Rendimiento por Vendedor</h5>
-                            <div>
-                                <button class="btn btn-success me-2" id="btnActualizarRendimiento"><i class="fas fa-sync me-1"></i> Actualizar</button>
-                                <button
-                                class="btn btn-outline-secondary"
-                                (click)="exportarRendimiento()">
-                                    <i class="fas fa-download me-1"></i>
-                                    Exportar
-                                </button>
-                            </div>
-                        </div>
-                        <table class="table table-hover table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Vendedor</th>
-                                    <th>Monto Vendido (S/)</th>
-                                    <th>Facturas Emitidas</th>
-                                    <th>Cotizaciones Enviadas</th>
-                                    <th>Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                    <tr *ngFor="let vendedor of vendedores">
-                                    <td>{{ vendedor.nombre }}</td>
-                                    <td>S/ {{ vendedor.ventas }}</td>
-                                    <td>{{ vendedor.facturas }}</td>
-                                    <td>{{ vendedor.cotizaciones }}</td>
-                                    <td>
-                                        <span
-                                            class="performance-badge me-3"
-                                            [ngClass]="{
-                                            'performance-high': vendedor.nivel === 'Alto',
-                                            'performance-medium': vendedor.nivel === 'Medio',
-                                            'performance-low': vendedor.nivel === 'Bajo'
-                                            }">
-                                            {{ vendedor.nivel }}
-                                        </span>
-                                        <button
-                                        class="btn btn-sm btn-outline-primary"
-                                        (click)="verDetalle(vendedor)">
-                                            <i class="fas fa-eye"></i>
-                                        </button>
-                                    </td>                                    
-                                </tr>
-                            </tbody>
-                        </table>
-                    </section>
-                </div>
-            </div>
+  <!-- Totales -->
+  <section class="row g-4 mb-4">
+
+    <div class="col-md-4">
+      <div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded">
+        <i class="fas fa-chart-line text-primary me-3"
+           style="font-size: 2rem;"></i>
+
+        <div>
+          <p class="mb-0 text-muted">
+            Reportes Generados
+          </p>
+
+          <h4 class="mb-0 fw-bold">
+            {{ totalesReportes().totalgenerados }}
+          </h4>
         </div>
-    </main>
+      </div>
     </div>
-    <div *ngIf="mostrarModal" class="modal-backdrop-custom">
-        <div class="modal-custom modal-lg">
-            <div class="d-flex justify-content-between mb-3">
-                <h2>
-                {{ modoEdicion ? 'Editar Reporte' : 'Nuevo Reporte' }}
-                </h2>
-                <button
-                class="btn-close"
-                    (click)="cerrarModal()">
-                </button>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">
-                    Nombre
-                </label>
-                <input
-                    type="text"
-                    class="form-control"
-                    [(ngModel)]="reporteSeleccionado.nombre">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">
-                    Fecha
-                </label>
-                <input
-                    type="date"
-                    class="form-control"
-                    [(ngModel)]="reporteSeleccionado.fecha">
-            </div>
-            <div class="mb-3">
-                <label class="form-label">
-                    Estado
-                </label>
 
-                <select
-                    class="form-select"
-                    [(ngModel)]="reporteSeleccionado.estado">
-                    <option value="Activo">
-                        Activo
-                    </option>
-                    <option value="Archivado">
-                        Archivado
-                    </option>
-                </select>
-            </div>
-            <button
-            class="btn btn-primary w-100"
-            (click)="guardarCambios()">
-                Guardar Cambios
-            </button>
+    <div class="col-md-4">
+      <div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded">
+        <i class="fas fa-file-alt text-success me-3"
+           style="font-size: 2rem;"></i>
+
+        <div>
+          <p class="mb-0 text-muted">
+            Reportes Activos
+          </p>
+
+          <h4 class="mb-0 fw-bold">
+            {{ totalesReportes().totalactivos }}
+          </h4>
         </div>
+      </div>
     </div>
-    <div *ngIf="mostrarDetalle" class="modal-backdrop-custom">
-    <div class="modal-custom modal-lg">
-        <div class="d-flex justify-content-between mb-3">
-            <h3>
-                Detalle de Rendimiento -
-                {{ vendedorSeleccionado?.nombre }}
-            </h3>
-            <button
-                class="btn-close"
-                (click)="cerrarDetalle()">
-            </button>
-        </div>
-        <div class="row mb-4">
-            <div class="col-md-4">
-                <div class="metric-card">
-                    <div class="metric-value text-success">
-                        S/ {{ vendedorSeleccionado?.ventas | number:'1.2-2' }}
-                    </div>
-                    <div class="metric-title">
-                        Monto Vendido
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="metric-card">
-                    <div class="metric-value text-primary">
-                        {{ vendedorSeleccionado?.facturas }}
-                    </div>
-                    <div class="metric-title">
-                        Facturas Emitidas
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="metric-card">
-                    <div class="metric-value text-info">
-                        {{ vendedorSeleccionado?.cotizaciones }}
-                    </div>
-                    <div class="metric-title">
-                        Cotizaciones Enviadas
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Facturas -->
-        <h4>Facturas Recientes</h4>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Cliente</th>
-                    <th>Monto</th>
-                    <th>Fecha</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let factura of facturasRecientes">
-                    <td>{{ factura.id }}</td>
-                    <td>{{ factura.cliente }}</td>
-                    <td>S/ {{ factura.monto | number:'1.2-2' }}</td>
-                    <td>{{ factura.fecha }}</td>
-                </tr>
-            </tbody>
-        </table>
+    <div class="col-md-4">
+      <div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded">
+        <i class="fas fa-archive text-warning me-3"
+           style="font-size: 2rem;"></i>
 
-        <h4>Cotizaciones Recientes</h4>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Cliente</th>
-                    <th>Total</th>
-                    <th>Estado</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let cotizacion of cotizacionesRecientes">
-                    <td>{{ cotizacion.id }}</td>
-                    <td>{{ cotizacion.cliente }}</td>
-                    <td>S/ {{ cotizacion.total | number:'1.2-2' }}</td>
-                    <td>
-                        <span class="badge bg-warning">
-                            {{ cotizacion.estado }}
-                        </span>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div>
+          <p class="mb-0 text-muted">
+            Reportes Archivados
+          </p>
+
+          <h4 class="mb-0 fw-bold">
+            {{ totalesReportes().totalarchivados }}
+          </h4>
+        </div>
+      </div>
     </div>
-</div>
+
+  </section>
+
+  <!-- Tabs -->
+  <div class="tabs-container">
+
+    <ul class="nav nav-tabs mb-4">
+
+      <li class="nav-item">
+        <button
+          class="nav-link"
+          [class.active]="pestanaActiva === 'inventario'"
+          (click)="cambiarPestana('inventario')">
+
+          <i class="fas fa-boxes me-2"></i>
+
+          Inventario
+        </button>
+      </li>
+
+      <li class="nav-item">
+        <button
+          class="nav-link"
+          [class.active]="pestanaActiva === 'rendimiento'"
+          (click)="cambiarPestana('rendimiento')">
+
+          <i class="fas fa-chart-line me-2"></i>
+
+          Rendimiento Comercial
+        </button>
+      </li>
+
+    </ul>
+
+    <!-- Inventario -->
+    <div *ngIf="pestanaActiva === 'inventario'"
+         class="bg-white shadow-sm p-4 rounded">
+
+      <div class="d-flex justify-content-between mb-4">
+
+        <h5 class="fw-bold">
+          Reporte de Stock Actual
+        </h5>
+
+        <div>
+
+          <button
+            class="btn btn-dark me-2"
+            (click)="agregarReporte()">
+
+            <i class="fas fa-plus me-1"></i>
+
+            Nuevo Reporte
+          </button>
+
+          <button
+            class="btn btn-outline-secondary"
+            (click)="exportarExcel()">
+
+            <i class="fas fa-download me-1"></i>
+
+            Exportar
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="mb-3">
+        <input
+          class="form-control"
+          [(ngModel)]="textoBusqueda"
+          placeholder="Buscar reportes por nombre o fecha">
+      </div>
+
+      <table class="table table-hover">
+
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let reporte of reportesFiltrados">
+
+            <td>{{ reporte.id_reporte }}</td>
+            <td>{{ reporte.nombre }}</td>
+            <td>{{ reporte.fecha }}</td>
+
+            <td>
+              <span
+                class="badge"
+                [ngClass]="{
+                  'bg-success': reporte.estado === 'Activo',
+                  'bg-warning': reporte.estado === 'Archivado'
+                }">
+
+                {{ reporte.estado }}
+
+              </span>
+            </td>
+
+            <td>
+
+              <button
+                class="btn btn-sm btn-info me-1"
+                (click)="verReporte(reporte)">
+
+                <i class="fas fa-eye text-white"></i>
+
+              </button>
+
+              <button
+                class="btn btn-sm btn-warning me-1"
+                (click)="editarReporte(reporte)">
+
+                <i class="fas fa-edit text-white"></i>
+
+              </button>
+
+              <button
+                class="btn btn-sm btn-danger"
+                (click)="eliminarReporte(reporte.id_reporte)">
+
+                <i class="fas fa-trash"></i>
+
+              </button>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+  <!-- Modal Crear / Editar -->
+  <div *ngIf="mostrarModal"
+       class="modal-backdrop-custom">
+
+    <div class="modal-custom">
+
+      <div class="d-flex justify-content-between mb-3">
+
+        <h4>
+          {{ modoEdicion ? 'Editar Reporte' : 'Nuevo Reporte' }}
+        </h4>
+
+        <button
+          class="btn btn-danger"
+          (click)="cerrarModal()">
+
+          X
+
+        </button>
+
+      </div>
+
+      <div class="mb-3">
+        <label>Nombre</label>
+
+        <input
+          class="form-control"
+          [(ngModel)]="reporteSeleccionado.nombre">
+      </div>
+
+      <div class="mb-3">
+        <label>Fecha</label>
+
+        <input
+          type="date"
+          class="form-control"
+          [(ngModel)]="reporteSeleccionado.fecha">
+      </div>
+
+      <div class="mb-3">
+
+        <label>Estado</label>
+
+        <select
+          class="form-select"
+          [(ngModel)]="reporteSeleccionado.estado">
+
+          <option value="Activo">
+            Activo
+          </option>
+
+          <option value="Archivado">
+            Archivado
+          </option>
+
+        </select>
+
+      </div>
+
+      <button
+        class="btn btn-primary w-100"
+        (click)="guardarCambios()">
+
+        Guardar Cambios
+
+      </button>
+
+    </div>
+
+  </div>
+
+</main>
