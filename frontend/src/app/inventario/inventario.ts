@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 import { StorageService } from '../core/services/storage.service';
 import { ExportService } from '../core/services/export.service';
 
 interface Producto { 
+  id?: number;
   codigo: string; 
   nombre: string; 
   ubicacion: string; 
@@ -39,6 +41,7 @@ export class Inventario implements OnInit {
   mostrarModalCambioPrecio = false;
 
   productos: Producto[] = [];
+  listaFiltrada: Producto[] = []; 
   historialPrecios: HistorialPrecio[] = [];
   terminoBusqueda: string = '';
 
@@ -52,7 +55,8 @@ export class Inventario implements OnInit {
 
   constructor(
     private storageService: StorageService,
-    private exportService: ExportService
+    private exportService: ExportService,
+    private http: HttpClient
   ) {}
 
   ngOnInit() {
@@ -62,25 +66,50 @@ export class Inventario implements OnInit {
 
   cargarDatos() {
     const prodStorage = this.storageService.get("productos");
+    if (prodStorage && prodStorage.length > 0) {
+      this.productos = prodStorage;
+      this.listaFiltrada = [...this.productos];
+    }
+
+    const apiUrl = 'https://g96duk1lm4.execute-api.us-east-1.amazonaws.com/v1/desarrollo_upc';
+    this.http.get<any>(apiUrl).subscribe({
+      next: (response) => {
+        let productosApi: Producto[] = [];
+        
+        if (response.body && typeof response.body === 'string') {
+          const bodyParsed = JSON.parse(response.body);
+          productosApi = bodyParsed.data || [];
+        } else if (response.data) {
+          productosApi = response.data;
+        }
+
+        this.productos = productosApi;
+        this.guardarDatos();
+        
+        this.filtrarProductos(); 
+      },
+      error: (err) => {
+        console.error('Pucha, falló la API:', err);
+        
+        this.filtrarProductos();
+      }
+    });
+
+    // Cargar historial
     const histStorage = this.storageService.get("historialPrecios");
-
-    this.productos = prodStorage || [
-      { codigo: "PROD-001", nombre: "Producto A", ubicacion: "B1", stock: 50, precio: 25.50, estado: "Disponible" },
-      { codigo: "PROD-002", nombre: "Producto B", ubicacion: "C2", stock: 30, precio: 18.75, estado: "Bajo Stock" }
-    ];
-
-    this.historialPrecios = histStorage || [
-      { codigo: "PROD-001", historial: [ { fecha: "2024-01-15", precio: 20.00, motivo: "Precio inicial" } ]},
-      { codigo: "PROD-002", historial: [ { fecha: "2024-01-10", precio: 15.00, motivo: "Precio inicial" } ]}
-    ];
-    
-    this.guardarDatos();
+    this.historialPrecios = histStorage || [];
   }
 
-  get productosFiltrados() {
-    if (!this.terminoBusqueda) return this.productos;
+  
+  filtrarProductos() {
+    if (!this.terminoBusqueda) {
+      this.listaFiltrada = [...this.productos];
+      return;
+    }
     const q = this.terminoBusqueda.toLowerCase();
-    return this.productos.filter(p => p.nombre.toLowerCase().includes(q) || p.codigo.toLowerCase().includes(q));
+    this.listaFiltrada = this.productos.filter(p => 
+      p.nombre.toLowerCase().includes(q) || p.codigo.toLowerCase().includes(q)
+    );
   }
 
   get totalProductos() { return this.productos.length; }
@@ -99,7 +128,7 @@ export class Inventario implements OnInit {
 
   abrirModalEditar(index: number, producto: Producto) {
     this.esEdicion = true;
-    this.indiceEdicion = index;
+    this.indiceEdicion = this.productos.findIndex(p => p.codigo === producto.codigo);
     this.productoActual = { ...producto };
   }
 
@@ -114,13 +143,21 @@ export class Inventario implements OnInit {
       this.productos.push({ ...this.productoActual });
     }
     this.guardarDatos();
+    this.filtrarProductos(); 
     this.mostrarModalProducto = false;
   }
 
   eliminarProducto(index: number, nombre: string) {
     if (confirm(`¿Estás seguro de eliminar "${nombre}"?`)) {
-      this.productos.splice(index, 1);
-      this.guardarDatos();
+      
+      const productoAEliminar = this.listaFiltrada[index];
+      const indiceReal = this.productos.findIndex(p => p.codigo === productoAEliminar.codigo);
+      
+      if (indiceReal > -1) {
+        this.productos.splice(indiceReal, 1);
+        this.guardarDatos();
+        this.filtrarProductos(); 
+      }
     }
   }
 
@@ -149,6 +186,7 @@ export class Inventario implements OnInit {
     histObj.historial.unshift({ fecha: new Date().toISOString().split('T')[0], precio: this.nuevoPrecio, motivo: this.motivoCambio });
     
     this.guardarDatos();
+    this.filtrarProductos(); 
     this.mostrarModalCambioPrecio = false;
     this.mostrarModalHistorial = false;
   }
