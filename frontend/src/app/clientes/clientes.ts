@@ -70,39 +70,35 @@ export class Clientes implements OnInit {
 
   }
 
-  private _mostrar_totales_clientes() {
-
+private _mostrar_totales_clientes() {
     this.cli.obtener_totales_clientes()
       .subscribe((rest: any) => {
+        console.log('Totales clientes:', rest);
 
-        console.log(
-          'Totales clientes:',
-          rest
-        );
-
-        this.totalesClientes.set(
-          rest.data[0]
-        );
-
+        if (rest && rest.data && rest.data.length > 0) {
+          this.totalesClientes.set(rest.data[0]);
+        } else {
+          this.totalesClientes.set({
+            totalclientes: 0,
+            totalactivos: 0,
+            totalempresa: 0,
+            totalnuevos: 0
+          });
+        }
       });
-
   }
 
   private _mostrar_lista_clientes() {
-
     this.cli.obtener_lista_clientes()
       .subscribe((rest: any) => {
+        console.log('Lista clientes:', rest);
 
-        console.log(
-          'Lista clientes:',
-          rest
-        );
-
-        this.clientes =
-          rest.data;
-
+        if (rest && rest.data) {
+          this.clientes = rest.data;
+        } else {
+          this.clientes = [];
+        }
       });
-
   }
 
   get clientesFiltrados() {
