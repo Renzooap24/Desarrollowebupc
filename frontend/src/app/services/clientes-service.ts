@@ -10,11 +10,11 @@ export class ClientesService {
   ){}
 
   obtener_totales_clientes(){
-    return this.http.get("https://q1yhc7uosb.execute-api.us-east-1.amazonaws.com/v1/clientes",{responseType: 'json'}); 
+    return this.http.get("https://01ihsy0q3e.execute-api.us-east-1.amazonaws.com/v1/clientes",{responseType: 'json'}); 
   }
   
   obtener_lista_clientes(){
-    return this.http.get("https://q1yhc7uosb.execute-api.us-east-1.amazonaws.com/v1/clientes/lista",{responseType: 'json'}); 
+    return this.http.get("https://01ihsy0q3e.execute-api.us-east-1.amazonaws.com/v1/clientes/lista",{responseType: 'json'}); 
   }  
   
   obtener_vista_cliente(param: string){
@@ -22,16 +22,16 @@ export class ClientesService {
   }
   
   crear_clientes(data: any){
-    return this.http.post("https://q1yhc7uosb.execute-api.us-east-1.amazonaws.com/v1/clientes/crear", data, {responseType: 'json'});
+    return this.http.post("https://01ihsy0q3e.execute-api.us-east-1.amazonaws.com/v1/clientes/crear", data, {responseType: 'json'});
   }
 
   editar_clientes(data: any){
-    return this.http.post("https://q1yhc7uosb.execute-api.us-east-1.amazonaws.com/v1/clientes/editar", data, {responseType: 'json'});
+    return this.http.post("https://01ihsy0q3e.execute-api.us-east-1.amazonaws.com/v1/clientes/editar", data, {responseType: 'json'});
   }
   
   eliminar_clientes(codigo: string){
     return this.http.post(
-      'https://q1yhc7uosb.execute-api.us-east-1.amazonaws.com/v1/clientes/eliminar',
+      'https://01ihsy0q3e.execute-api.us-east-1.amazonaws.com/v1/clientes/eliminar',
       { codigo },
       { responseType: 'json' }
     );

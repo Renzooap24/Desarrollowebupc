@@ -1,5 +1,6 @@
 <main class="container mt-4">
 
+  <!-- Breadcrumb -->
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
       <li class="breadcrumb-item">
@@ -7,78 +8,100 @@
           Volver a la Página Principal
         </a>
       </li>
+
       <li class="breadcrumb-item active">
         Reportes
       </li>
     </ol>
   </nav>
 
-  <h1 class="mb-2">Reportes</h1>
+  <!-- Título -->
+  <h1 class="mb-2">
+    Reportes
+  </h1>
 
   <p class="text-muted mb-4">
     Generación y visualización de reportes
   </p>
 
-  <!-- Totales -->
-  <section class="row g-4 mb-4">
+  <!-- Indicadores -->
+  <div class="row mb-4">
 
     <div class="col-md-4">
-      <div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded">
-        <i class="fas fa-chart-line text-primary me-3"
-           style="font-size: 2rem;"></i>
+
+      <div class="summary-card d-flex align-items-center">
+
+        <i
+          class="fas fa-chart-line text-primary me-3"
+          style="font-size: 2rem;">
+        </i>
 
         <div>
-          <p class="mb-0 text-muted">
+          <div class="text-muted">
             Reportes Generados
-          </p>
+          </div>
 
-          <h4 class="mb-0 fw-bold">
+          <h3>
             {{ totalesReportes().totalgenerados }}
-          </h4>
+          </h3>
         </div>
+
       </div>
+
     </div>
 
     <div class="col-md-4">
-      <div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded">
-        <i class="fas fa-file-alt text-success me-3"
-           style="font-size: 2rem;"></i>
+
+      <div class="summary-card d-flex align-items-center">
+
+        <i
+          class="fas fa-file-alt text-success me-3"
+          style="font-size: 2rem;">
+        </i>
 
         <div>
-          <p class="mb-0 text-muted">
+          <div class="text-muted">
             Reportes Activos
-          </p>
+          </div>
 
-          <h4 class="mb-0 fw-bold">
+          <h3>
             {{ totalesReportes().totalactivos }}
-          </h4>
+          </h3>
         </div>
+
       </div>
+
     </div>
 
     <div class="col-md-4">
-      <div class="bg-white summary-card d-flex align-items-center shadow-sm p-3 rounded">
-        <i class="fas fa-archive text-warning me-3"
-           style="font-size: 2rem;"></i>
+
+      <div class="summary-card d-flex align-items-center">
+
+        <i
+          class="fas fa-archive text-purple me-3"
+          style="font-size: 2rem;">
+        </i>
 
         <div>
-          <p class="mb-0 text-muted">
+          <div class="text-muted">
             Reportes Archivados
-          </p>
+          </div>
 
-          <h4 class="mb-0 fw-bold">
+          <h3>
             {{ totalesReportes().totalarchivados }}
-          </h4>
+          </h3>
         </div>
+
       </div>
+
     </div>
 
-  </section>
+  </div>
 
   <!-- Tabs -->
   <div class="tabs-container">
 
-    <ul class="nav nav-tabs mb-4">
+    <ul class="nav nav-tabs">
 
       <li class="nav-item">
         <button
@@ -89,6 +112,7 @@
           <i class="fas fa-boxes me-2"></i>
 
           Inventario
+
         </button>
       </li>
 
@@ -101,20 +125,22 @@
           <i class="fas fa-chart-line me-2"></i>
 
           Rendimiento Comercial
+
         </button>
       </li>
 
     </ul>
 
-    <!-- Inventario -->
-    <div *ngIf="pestanaActiva === 'inventario'"
-         class="bg-white shadow-sm p-4 rounded">
+    <!-- ========================================= -->
+    <!-- INVENTARIO -->
+    <!-- ========================================= -->
 
-      <div class="d-flex justify-content-between mb-4">
+    <div
+      *ngIf="pestanaActiva === 'inventario'"
+      class="table-container">
 
-        <h5 class="fw-bold">
-          Reporte de Stock Actual
-        </h5>
+      <div
+        class="d-flex justify-content-between align-items-center mb-4">
 
         <div>
 
@@ -125,6 +151,7 @@
             <i class="fas fa-plus me-1"></i>
 
             Nuevo Reporte
+
           </button>
 
           <button
@@ -134,22 +161,23 @@
             <i class="fas fa-download me-1"></i>
 
             Exportar
+
           </button>
 
         </div>
 
-      </div>
-
-      <div class="mb-3">
         <input
           class="form-control"
+          style="width:300px"
           [(ngModel)]="textoBusqueda"
-          placeholder="Buscar reportes por nombre o fecha">
+          placeholder="Buscar reporte">
+
       </div>
 
       <table class="table table-hover">
 
         <thead>
+
           <tr>
             <th>ID</th>
             <th>Nombre</th>
@@ -157,50 +185,69 @@
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
+
         </thead>
 
         <tbody>
 
-          <tr *ngFor="let reporte of reportesFiltrados">
-
-            <td>{{ reporte.id_reporte }}</td>
-            <td>{{ reporte.nombre }}</td>
-            <td>{{ reporte.fecha }}</td>
+          <tr
+            *ngFor="
+              let reporte
+              of reportesFiltrados
+            ">
 
             <td>
+              {{ reporte.id_reporte }}
+            </td>
+
+            <td>
+              {{ reporte.nombre }}
+            </td>
+
+            <td>
+              {{ reporte.fecha }}
+            </td>
+
+            <td>
+
               <span
                 class="badge"
                 [ngClass]="{
-                  'bg-success': reporte.estado === 'Activo',
-                  'bg-warning': reporte.estado === 'Archivado'
+                  'bg-success':
+                    reporte.estado === 'Activo',
+                  'bg-warning':
+                    reporte.estado === 'Archivado'
                 }">
 
                 {{ reporte.estado }}
 
               </span>
+
             </td>
 
             <td>
 
               <button
-                class="btn btn-sm btn-info me-1"
+                class="btn btn-sm btn-outline-primary me-1"
                 (click)="verReporte(reporte)">
 
-                <i class="fas fa-eye text-white"></i>
+                <i class="fas fa-eye"></i>
 
               </button>
 
               <button
-                class="btn btn-sm btn-warning me-1"
+                class="btn btn-sm btn-outline-warning me-1"
                 (click)="editarReporte(reporte)">
 
-                <i class="fas fa-edit text-white"></i>
+                <i class="fas fa-edit"></i>
 
               </button>
 
               <button
-                class="btn btn-sm btn-danger"
-                (click)="eliminarReporte(reporte.id_reporte)">
+                class="btn btn-sm btn-outline-danger"
+                (click)="eliminarReporte(
+                  reporte.id_reporte
+                )">
 
                 <i class="fas fa-trash"></i>
 
@@ -216,19 +263,131 @@
 
     </div>
 
+    <!-- ========================================= -->
+    <!-- RENDIMIENTO COMERCIAL -->
+    <!-- ========================================= -->
+
+    <div
+      *ngIf="pestanaActiva === 'rendimiento'"
+      class="table-container">
+
+      <div
+        class="d-flex justify-content-between mb-4">
+
+        <h4>
+          Rendimiento por Vendedor
+        </h4>
+
+        <button
+          class="btn btn-outline-secondary"
+          (click)="exportarRendimiento()">
+
+          <i class="fas fa-download me-1"></i>
+
+          Exportar
+
+        </button>
+
+      </div>
+
+      <table class="table table-hover">
+
+        <thead>
+
+          <tr>
+            <th>Vendedor</th>
+            <th>Monto Vendido</th>
+            <th>Facturas Emitidas</th>
+            <th>Acciones</th>
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <tr
+            *ngFor="
+              let vendedor
+              of vendedores
+            ">
+
+            <td>
+
+              <strong>
+                {{ vendedor.nombre }}
+              </strong>
+
+              <br>
+
+              <small class="text-muted">
+                ID:
+                {{ vendedor.id_vendedor }}
+              </small>
+
+            </td>
+
+            <td>
+
+              S/
+              {{
+                vendedor.monto_total
+                | number:'1.2-2'
+              }}
+
+            </td>
+
+            <td>
+
+              <span class="badge bg-primary">
+
+                {{ vendedor.cant_factura }}
+
+              </span>
+
+            </td>
+
+            <td>
+
+              <button
+                class="btn btn-outline-primary btn-sm"
+                (click)="verDetalle(vendedor)">
+
+                <i class="fas fa-eye"></i>
+
+              </button>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
   </div>
 
-  <!-- Modal Crear / Editar -->
-  <div *ngIf="mostrarModal"
-       class="modal-backdrop-custom">
+  <!-- ========================================= -->
+  <!-- MODAL CREAR / EDITAR -->
+  <!-- ========================================= -->
+
+  <div
+    *ngIf="mostrarModal"
+    class="modal-backdrop-custom">
 
     <div class="modal-custom">
 
-      <div class="d-flex justify-content-between mb-3">
+      <div
+        class="d-flex justify-content-between mb-4">
 
-        <h4>
-          {{ modoEdicion ? 'Editar Reporte' : 'Nuevo Reporte' }}
-        </h4>
+        <h3>
+          {{
+            modoEdicion
+            ? 'Editar Reporte'
+            : 'Nuevo Reporte'
+          }}
+        </h3>
 
         <button
           class="btn btn-danger"
@@ -241,29 +400,45 @@
       </div>
 
       <div class="mb-3">
-        <label>Nombre</label>
+
+        <label>
+          Nombre
+        </label>
 
         <input
           class="form-control"
-          [(ngModel)]="reporteSeleccionado.nombre">
+          [(ngModel)]="
+            reporteSeleccionado.nombre
+          ">
+
       </div>
 
       <div class="mb-3">
-        <label>Fecha</label>
+
+        <label>
+          Fecha
+        </label>
 
         <input
           type="date"
           class="form-control"
-          [(ngModel)]="reporteSeleccionado.fecha">
+          [(ngModel)]="
+            reporteSeleccionado.fecha
+          ">
+
       </div>
 
-      <div class="mb-3">
+      <div class="mb-4">
 
-        <label>Estado</label>
+        <label>
+          Estado
+        </label>
 
         <select
           class="form-select"
-          [(ngModel)]="reporteSeleccionado.estado">
+          [(ngModel)]="
+            reporteSeleccionado.estado
+          ">
 
           <option value="Activo">
             Activo
@@ -284,6 +459,141 @@
         Guardar Cambios
 
       </button>
+
+    </div>
+
+  </div>
+
+  <!-- ========================================= -->
+  <!-- MODAL DETALLE VENDEDOR -->
+  <!-- ========================================= -->
+
+  <div
+    *ngIf="mostrarDetalle"
+    class="modal-backdrop-custom">
+
+    <div class="modal-custom modal-lg">
+
+      <div
+        class="d-flex justify-content-between align-items-center mb-4">
+
+        <h3>
+
+          Detalle de Rendimiento -
+          {{ vendedorSeleccionado.nombre }}
+
+        </h3>
+
+        <button
+          class="btn btn-light"
+          (click)="cerrarDetalle()">
+
+          <i class="fas fa-times"></i>
+
+        </button>
+
+      </div>
+
+      <div class="row mb-4">
+
+        <div class="col-md-6">
+
+          <div class="metric-card">
+
+            <div
+              class="metric-value text-success">
+
+              S/
+              {{
+                vendedorSeleccionado.monto_total
+                | number:'1.2-2'
+              }}
+
+            </div>
+
+            <div class="metric-title">
+              Monto Vendido
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="col-md-6">
+
+          <div class="metric-card">
+
+            <div
+              class="metric-value text-primary">
+
+              {{
+                vendedorSeleccionado.cant_factura
+              }}
+
+            </div>
+
+            <div class="metric-title">
+              Facturas Emitidas
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+      <h5 class="mb-3">
+        Facturas Recientes
+      </h5>
+
+      <table class="table">
+
+        <thead>
+
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Monto</th>
+            <th>Fecha</th>
+          </tr>
+
+        </thead>
+
+        <tbody>
+
+          <tr
+            *ngFor="
+              let factura
+              of facturasVendedor
+            ">
+
+            <td>
+              {{ factura.id_factura }}
+            </td>
+
+            <td>
+              {{ factura.nombre }}
+            </td>
+
+            <td>
+
+              S/
+              {{
+                factura.monto_total
+                | number:'1.2-2'
+              }}
+
+            </td>
+
+            <td>
+              {{ factura.fecha_emision }}
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
 
     </div>
 

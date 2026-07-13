@@ -10,6 +10,6 @@ export class SistemaService {
   ){}
 
   obtener_totales_sistema(){
-    return this.http.get("https://q1yhc7uosb.execute-api.us-east-1.amazonaws.com/v1/sistema",{responseType: 'json'}); 
+    return this.http.get("https://01ihsy0q3e.execute-api.us-east-1.amazonaws.com/v1/sistema",{responseType: 'json'}); 
   }
 }

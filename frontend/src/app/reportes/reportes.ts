@@ -1,10 +1,17 @@
-import { Component, OnInit, signal } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  signal
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+
 import * as XLSX from 'xlsx';
 
-import { ReportesService } from '../services/reportes-service';
+import { ReportesService }
+from '../services/reportes-service';
 
 @Component({
   selector: 'app-reportes',
@@ -29,9 +36,19 @@ export class Reportes implements OnInit {
 
   mostrarModal = false;
 
-  reporteSeleccionado: any = null;
+  mostrarDetalle = false;
 
   modoEdicion = false;
+
+  reporteSeleccionado: any = null;
+
+  vendedorSeleccionado: any = null;
+
+  reportesInventario: any[] = [];
+
+  vendedores: any[] = [];
+
+  facturasVendedor: any[] = [];
 
   totalesReportes = signal<any>({
     totalgenerados: 0,
@@ -39,92 +56,29 @@ export class Reportes implements OnInit {
     totalarchivados: 0
   });
 
-  reportesInventario: any[] = [];
-
-  mostrarDetalle = false;
-
-  vendedorSeleccionado: any = null;
-
-  vendedores = [
-    {
-      id: 1,
-      nombre: 'Ana López',
-      ventas: 7100.75,
-      facturas: 3,
-      cotizaciones: 3,
-      nivel: 'Medio'
-    },
-    {
-      id: 2,
-      nombre: 'Carlos Ruiz',
-      ventas: 6650.75,
-      facturas: 3,
-      cotizaciones: 2,
-      nivel: 'Medio'
-    },
-    {
-      id: 3,
-      nombre: 'Juan Pérez',
-      ventas: 7700.50,
-      facturas: 2,
-      cotizaciones: 2,
-      nivel: 'Bajo'
-    }
-  ];
-
-  facturasRecientes = [
-    {
-      id: 'FAC-001',
-      cliente: 'Empresa A',
-      monto: 2500,
-      fecha: '2024-02-20'
-    },
-    {
-      id: 'FAC-002',
-      cliente: 'Empresa B',
-      monto: 1800.50,
-      fecha: '2024-02-18'
-    },
-    {
-      id: 'FAC-006',
-      cliente: 'Empresa F',
-      monto: 2800.25,
-      fecha: '2024-02-15'
-    }
-  ];
-
-  cotizacionesRecientes = [
-    {
-      id: 'COT-001',
-      cliente: 'CLI-001 - Juan Carlos Pérez',
-      total: 1500,
-      estado: 'Pendiente'
-    },
-    {
-      id: 'COT-003',
-      cliente: 'CLI-004 - María González',
-      total: 2200,
-      estado: 'Pendiente'
-    },
-    {
-      id: 'COT-006',
-      cliente: 'CLI-007 - Luis Morales',
-      total: 950.25,
-      estado: 'Pendiente'
-    }
-  ];
-
   ngOnInit(): void {
+
     this._mostrar_totales_reportes();
+
     this._mostrar_lista_reportes();
+
+    this._mostrar_lista_vendedor_facturas();
+
   }
+
+  /* =====================================
+     TOTALES
+     ===================================== */
 
   private _mostrar_totales_reportes() {
 
     this.rep.obtener_totales_reportes()
       .subscribe((rest: any) => {
 
-        console.log(rest);
+        console.log(
+          'Totales reportes:',
+          rest
+        );
 
         this.totalesReportes.set(
           rest.data[0]
@@ -134,26 +88,24 @@ export class Reportes implements OnInit {
 
   }
 
+  /* =====================================
+     REPORTES INVENTARIO
+     ===================================== */
+
   private _mostrar_lista_reportes() {
 
     this.rep.obtener_lista_reportes()
       .subscribe((rest: any) => {
 
-        console.log(rest);
+        console.log(
+          'Lista reportes:',
+          rest
+        );
 
         this.reportesInventario =
           rest.data;
 
       });
-
-  }
-
-  cambiarPestana(
-    pestana: string
-  ) {
-
-    this.pestanaActiva =
-      pestana;
 
   }
 
@@ -169,7 +121,8 @@ export class Reportes implements OnInit {
         reporte.nombre
           .toLowerCase()
           .includes(
-            this.textoBusqueda.toLowerCase()
+            this.textoBusqueda
+              .toLowerCase()
           )
 
         ||
@@ -187,10 +140,15 @@ export class Reportes implements OnInit {
     this.modoEdicion = false;
 
     this.reporteSeleccionado = {
+
       id_reporte: 0,
+
       nombre: '',
+
       fecha: '',
+
       estado: 'Activo'
+
     };
 
     this.mostrarModal = true;
@@ -213,6 +171,8 @@ export class Reportes implements OnInit {
 
   guardarCambios() {
 
+    /* EDITAR */
+
     if (this.modoEdicion) {
 
       this.rep.editar_reportes(
@@ -220,20 +180,28 @@ export class Reportes implements OnInit {
       )
       .subscribe({
 
-        next: () => {
+        next: (rest: any) => {
+
+          console.log(
+            'Reporte actualizado:',
+            rest
+          );
 
           alert(
             'Reporte actualizado correctamente.'
           );
 
           this._mostrar_lista_reportes();
+
           this._mostrar_totales_reportes();
 
           this.mostrarModal = false;
 
         },
 
-        error: () => {
+        error: (err: any) => {
+
+          console.error(err);
 
           alert(
             'Error al actualizar el reporte.'
@@ -244,27 +212,38 @@ export class Reportes implements OnInit {
       });
 
       return;
+
     }
+
+    /* CREAR */
 
     this.rep.crear_reportes(
       this.reporteSeleccionado
     )
     .subscribe({
 
-      next: () => {
+      next: (rest: any) => {
+
+        console.log(
+          'Reporte creado:',
+          rest
+        );
 
         alert(
           'Reporte registrado correctamente.'
         );
 
         this._mostrar_lista_reportes();
+
         this._mostrar_totales_reportes();
 
         this.mostrarModal = false;
 
       },
 
-      error: () => {
+      error: (err: any) => {
+
+        console.error(err);
 
         alert(
           'Error al registrar el reporte.'
@@ -294,7 +273,12 @@ export class Reportes implements OnInit {
     )
     .subscribe({
 
-      next: () => {
+      next: (rest: any) => {
+
+        console.log(
+          'Reporte eliminado:',
+          rest
+        );
 
         alert(
           'Reporte eliminado correctamente.'
@@ -306,7 +290,9 @@ export class Reportes implements OnInit {
 
       },
 
-      error: () => {
+      error: (err: any) => {
+
+        console.error(err);
 
         alert(
           'Error al eliminar el reporte.'
@@ -330,6 +316,43 @@ Estado: ${reporte.estado}`
 
   }
 
+  cerrarModal() {
+
+    this.mostrarModal = false;
+
+  }
+
+  /* =====================================
+     RENDIMIENTO COMERCIAL
+     ===================================== */
+
+  private _mostrar_lista_vendedor_facturas() {
+
+    this.rep.obtener_lista_vendedor_facturas()
+      .subscribe({
+
+        next: (rest: any) => {
+
+          console.log(
+            'Vendedores:',
+            rest
+          );
+
+          this.vendedores =
+            rest.data;
+
+        },
+
+        error: (err: any) => {
+
+          console.error(err);
+
+        }
+
+      });
+
+  }
+
   verDetalle(
     vendedor: any
   ) {
@@ -337,7 +360,37 @@ Estado: ${reporte.estado}`
     this.vendedorSeleccionado =
       vendedor;
 
-    this.mostrarDetalle = true;
+    this.rep.obtener_vlista_facturas_vendedor(
+      vendedor.id_vendedor
+    )
+    .subscribe({
+
+      next: (rest: any) => {
+
+        console.log(
+          'Facturas vendedor:',
+          rest
+        );
+
+        this.facturasVendedor =
+          rest.data;
+
+        this.mostrarDetalle =
+          true;
+
+      },
+
+      error: (err: any) => {
+
+        console.error(err);
+
+        alert(
+          'Error al obtener las facturas del vendedor.'
+        );
+
+      }
+
+    });
 
   }
 
@@ -345,13 +398,24 @@ Estado: ${reporte.estado}`
 
     this.mostrarDetalle = false;
 
-  }
+    this.vendedorSeleccionado = null;
 
-  cerrarModal() {
-
-    this.mostrarModal = false;
+    this.facturasVendedor = [];
 
   }
+
+  cambiarPestana(
+    pestana: string
+  ) {
+
+    this.pestanaActiva =
+      pestana;
+
+  }
+
+  /* =====================================
+     EXPORTAR REPORTES
+     ===================================== */
 
   exportarExcel() {
 
@@ -359,9 +423,14 @@ Estado: ${reporte.estado}`
       this.reportesInventario.map(
         reporte => ({
 
-          Nombre: reporte.nombre,
-          Fecha: reporte.fecha,
-          Estado: reporte.estado
+          Nombre:
+            reporte.nombre,
+
+          Fecha:
+            reporte.fecha,
+
+          Estado:
+            reporte.estado
 
         })
       );
@@ -387,16 +456,24 @@ Estado: ${reporte.estado}`
 
   }
 
+  /* =====================================
+     EXPORTAR RENDIMIENTO
+     ===================================== */
+
   exportarRendimiento() {
 
     const datos =
       this.vendedores.map(
-        v => ({
+        vendedor => ({
 
-          Vendedor: v.nombre,
-          'Monto Vendido': v.ventas,
-          Facturas: v.facturas,
-          Cotizaciones: v.cotizaciones
+          Vendedor:
+            vendedor.nombre,
+
+          'Monto Vendido':
+            vendedor.monto_total,
+
+          Facturas:
+            vendedor.cant_factura
 
         })
       );
@@ -412,7 +489,7 @@ Estado: ${reporte.estado}`
     XLSX.utils.book_append_sheet(
       wb,
       ws,
-      'Rendimiento'
+      'Rendimiento Comercial'
     );
 
     XLSX.writeFile(
