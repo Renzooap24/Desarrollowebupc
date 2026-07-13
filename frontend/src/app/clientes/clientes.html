@@ -269,9 +269,15 @@
 
   <div class="modal-custom">
 
-    <h4 class="mb-3">
-      Editar Cliente
-    </h4>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4>Editar Cliente</h4>
+
+      <button
+        class="btn btn-danger"
+        (click)="mostrarEditarCliente = false">
+        X
+      </button>
+    </div>
 
     <input class="form-control mb-2" [(ngModel)]="clienteEditando.codigo" readonly>
     <input class="form-control mb-2" [(ngModel)]="clienteEditando.nombre" placeholder="Nombre">
@@ -310,9 +316,15 @@
 
   <div class="modal-custom">
 
-    <h4 class="mb-3">
-      Nuevo Cliente
-    </h4>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4>Nuevo Cliente</h4>
+
+      <button
+        class="btn btn-danger"
+        (click)="mostrarNuevoCliente = false">
+        X
+      </button>
+    </div>
 
     <input class="form-control mb-2" [(ngModel)]="nuevoCliente.codigo" placeholder="Código">
     <input class="form-control mb-2" [(ngModel)]="nuevoCliente.nombre" placeholder="Nombre">
